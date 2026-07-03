@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>相亲评分 · 她不一样</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a26;--border:#2a2a3a;--pink:#fd79a8;--cyan:#06b6d4;--green:#2ecc71;--orange:#e67e22;--red:#e74c3c;--yellow:#f1c40f;--text:#e0e0e0;--text2:#999;--text3:#666;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif;line-height:1.8;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 60px;}
+.back{display:inline-block;font-size:13px;color:var(--text2);text-decoration:none;margin-bottom:20px;padding:6px 14px;background:var(--card);border-radius:20px;border:1px solid var(--border);}
+.back:hover{color:var(--cyan);}
+.hero{text-align:center;padding:20px 0 28px;}
+.hero-title{font-size:24px;font-weight:300;color:#fff;letter-spacing:2px;}
+.hero-sub{font-size:13px;color:var(--text2);margin-top:6px;}
+.form-group{background:var(--card);border-radius:14px;padding:20px;margin-bottom:16px;border:1px solid var(--border);}
+.form-group h3{font-size:13px;color:var(--cyan);margin-bottom:14px;letter-spacing:1px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-row.single{grid-template-columns:1fr;}
+label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px;}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border .2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--cyan);}
+textarea{resize:vertical;min-height:60px;}
+.radio-group{display:flex;gap:8px;flex-wrap:wrap;}
+.radio-opt{padding:8px 16px;background:var(--card2);border:1px solid var(--border);border-radius:20px;font-size:13px;cursor:pointer;transition:all .2s;user-select:none;}
+.radio-opt.active{background:var(--cyan);color:#000;border-color:var(--cyan);font-weight:600;}
+input[type="range"]{padding:0;height:6px;border-radius:3px;background:var(--border);-webkit-appearance:none;appearance:none;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--cyan);cursor:pointer;}
+.slider-val{font-size:18px;font-weight:700;color:var(--cyan);text-align:center;margin-top:4px;}
+.btn{display:block;width:100%;padding:16px;border-radius:30px;font-size:16px;font-weight:600;cursor:pointer;border:none;text-align:center;margin-top:8px;transition:all .25s;}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--green));color:#000;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(6,182,212,.2);}
+.result{display:none;}
+.score-display{text-align:center;padding:30px 0;}
+.score-num{font-size:64px;font-weight:800;line-height:1;}
+.score-grade{font-size:18px;margin-top:8px;font-weight:600;}
+.score-label{font-size:13px;color:var(--text2);margin-top:6px;}
+.result-card{background:var(--card);border-radius:14px;padding:20px;margin-bottom:14px;border:1px solid var(--border);}
+.result-card h3{font-size:13px;color:var(--cyan);margin-bottom:12px;letter-spacing:1px;}
+.dim-table{width:100%;border-collapse:collapse;}
+.dim-table td{padding:8px 4px;font-size:13px;border-bottom:1px solid var(--border);}
+.dim-table td:last-child{text-align:right;font-weight:600;}
+.dim-bar{height:6px;background:var(--border);border-radius:3px;margin-top:4px;overflow:hidden;}
+.dim-bar-fill{height:100%;border-radius:3px;transition:width .8s;}
+.flag{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.flag:last-child{border-bottom:none;}
+.flag-icon{font-size:16px;flex-shrink:0;}
+.flag-text{font-size:13px;color:var(--text2);}
+.flag-text b{color:var(--red);}
+.recommendation{text-align:center;padding:24px;border-radius:14px;margin-top:8px;}
+.rec-see{background:rgba(46,204,113,.1);border:1px solid var(--green);}
+.rec-pass{background:rgba(231,76,60,.1);border:1px solid var(--red);}
+.rec-maybe{background:rgba(241,196,15,.1);border:1px solid var(--yellow);}
+.rec-text{font-size:16px;font-weight:600;}
+@media(max-width:600px){.form-row{grid-template-columns:1fr;}.score-num{font-size:48px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="portal.html">← 工具箱</a>
+  <div class="hero">
+    <div class="hero-title">💎 相亲评分</div>
+    <div class="hero-sub">4 层框架 · 男女双版 · 红旗检测</div>
+  </div>
+
+  <div id="form-page">
+    <div class="form-group">
+      <h3>评分视角</h3>
+      <div class="radio-group" id="rater-gender">
+        <div class="radio-opt active" data-val="male">男评女</div>
+        <div class="radio-opt" data-val="female">女评男</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <h3>基本信息</h3>
+      <div class="form-row">
+        <div><label>年龄</label><input type="number" id="age" value="28" min="18" max="50"></div>
+        <div><label>身高 (cm)</label><input type="number" id="height" value="165" min="140" max="200"></div>
+      </div>
+      <div class="form-row">
+        <div><label>体重 (kg)</label><input type="number" id="weight" value="55" min="35" max="120"></div>
+        <div><label>政治面貌</label>
+          <select id="political">
+            <option value="mass">群众</option>
+            <option value="party">党员</option>
+            <option value="other">民主党派</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row single">
+        <label>长相自评 (1-10)</label>
+        <input type="range" id="looks" min="1" max="10" value="6" oninput="document.getElementById('looks-val').textContent=this.value">
+        <div class="slider-val" id="looks-val">6</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <h3>学历与职业</h3>
+      <div class="form-row">
+        <div><label>学历</label>
+          <select id="education">
+            <option value="highschool">高中</option>
+            <option value="college">大专</option>
+            <option value="bachelor_d">双非本科</option>
+            <option value="bachelor_211">211本科</option>
+            <option value="bachelor_985">985本科</option>
+            <option value="master">硕士</option>
+            <option value="phd">博士</option>
+          </select>
+        </div>
+        <div><label>月收入</label>
+          <select id="income">
+            <option value="low"><5k</option>
+            <option value="mid">5-10k</option>
+            <option value="midhigh">10-20k</option>
+            <option value="high">20-50k</option>
+            <option value="top">50k+</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row single"><label>职业</label><input type="text" id="career" placeholder="如：央企编辑 / 银行客户经理"></div>
+    </div>
+
+    <div class="form-group">
+      <h3>家庭背景</h3>
+      <div class="form-row single"><label>父母职业 / 家庭情况</label><input type="text" id="family" placeholder="如：父亲银行行长，母亲退休教师"></div>
+      <div class="form-row">
+        <div><label>是否独生</label>
+          <select id="only_child"><option value="yes">独生</option><option value="no">非独生</option></select>
+        </div>
+        <div><label>父母婚姻</label>
+          <select id="parents_marriage"><option value="married">在婚</option><option value="divorced">离异</option><option value="widowed">丧偶</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <h3>资产</h3>
+      <div class="form-row">
+        <div><label>房产</label>
+          <select id="property">
+            <option value="none">无</option>
+            <option value="mortgage">有房贷</option>
+            <option value="owned1">全款1套</option>
+            <option value="owned2">全款2套+</option>
+          </select>
+        </div>
+        <div><label>车辆</label>
+          <select id="car"><option value="no">无</option><option value="yes">有</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <h3>介绍人分析（可选但强烈建议填写）</h3>
+      <div class="form-row single"><label>介绍人话术</label><textarea id="matchmaker_words" placeholder="把介绍人原话贴进来，如'她各方面都很优秀，你们条件挺合适的'"></textarea></div>
+      <div class="form-row">
+        <div><label>介绍人是否有同质未婚子女？</label>
+          <select id="matchmaker_child">
+            <option value="unknown">不确定</option>
+            <option value="yes_has">有，未婚</option>
+            <option value="yes_married">有，已婚</option>
+            <option value="no">没有子女</option>
+          </select>
+        </div>
+        <div><label>如果有，子女是否被介绍过此人？</label>
+          <select id="matchmaker_introduced">
+            <option value="unknown">不确定</option>
+            <option value="no">没有介绍给自己子女</option>
+            <option value="yes">介绍给了自己子女</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="calculate()">开始评分</button>
+  </div>
+
+  <div id="result-page" class="result">
+    <div class="score-display">
+      <div class="score-num" id="final-score">--</div>
+      <div class="score-grade" id="grade">--</div>
+      <div class="score-label" id="score-label">--</div>
+    </div>
+
+    <div style="height:300px;margin:20px 0;"><canvas id="radar"></canvas></div>
+
+    <div class="result-card">
+      <h3>📊 各维度得分</h3>
+      <table class="dim-table" id="dim-table"></table>
+    </div>
+
+    <div class="result-card" id="flags-card" style="display:none;">
+      <h3>🚩 红旗检测</h3>
+      <div id="flags-list"></div>
+    </div>
+
+    <div class="result-card">
+      <h3>📈 市场定价分析</h3>
+      <div id="market-analysis"></div>
+    </div>
+
+    <div class="result-card" id="double-standard-card" style="display:none;">
+      <h3>🔍 介绍人双标检测</h3>
+      <div id="double-standard"></div>
+    </div>
+
+    <div class="recommendation" id="rec-box">
+      <div class="rec-text" id="rec-text"></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="reset()" style="margin-top:16px;">重新评分</button>
+  </div>
+</div>
+
+<script>
+// Gender toggle
+let raterGender='male';
+document.querySelectorAll('#rater-gender .radio-opt').forEach(o=>{
+  o.onclick=()=>{document.querySelectorAll('#rater-gender .radio-opt').forEach(x=>x.classList.remove('active'));o.classList.add('active');raterGender=o.dataset.val;};
+});
+
+function calc(){
+  const age=+document.getElementById('age').value;
+  const height=+document.getElementById('height').value;
+  const weight=+document.getElementById('weight').value;
+  const looks=+document.getElementById('looks').value;
+  const edu=document.getElementById('education').value;
+  const income=document.getElementById('income').value;
+  const family=document.getElementById('family').value;
+  const onlyChild=document.getElementById('only_child').value;
+  const parentsM=document.getElementById('parents_marriage').value;
+  const prop=document.getElementById('property').value;
+  const car=document.getElementById('car').value;
+  const political=document.getElementById('political').value;
+  const mmWords=document.getElementById('matchmaker_words').value;
+  const mmChild=document.getElementById('matchmaker_child').value;
+  const mmIntro=document.getElementById('matchmaker_introduced').value;
+
+  const bmi=weight/Math.pow(height/100,2);
+  let scores={};
+
+  // Education score
+  const eduMap={highschool:3,college:5,bachelor_d:7,bachelor_211:9,bachelor_985:11,master:14,phd:15};
+  let eduScore=eduMap[edu]||7;
+
+  // Income score
+  const incomeMap={low:3,mid:5,midhigh:8,high:10,top:10};
+  let incomeScore=incomeMap[income]||5;
+
+  // Looks score (base from slider, BMI adjustment)
+  let looksBase=looks*2;
+  if(bmi>=18.5&&bmi<=24){looksBase+=3;}
+  if(bmi<17||bmi>28){looksBase-=3;}
+  let looksScore=Math.min(25,Math.max(5,looksBase));
+
+  // Property score
+  let propScore=0;
+  if(prop==='mortgage')propScore=2;
+  if(prop==='owned1')propScore=3;
+  if(prop==='owned2')propScore=5;
+  if(car==='yes')propScore+=1;
+  propScore=Math.min(propScore,5);
+
+  // Family score
+  let famScore=0;
+  if(family.length>5)famScore+=4;
+  if(onlyChild==='yes')famScore+=2;
+  if(parentsM==='married')famScore+=2;
+  if(parentsM==='divorced')famScore-=2;
+  if(/行长|主任|局长|教授|医生|律师|工程师|央企|体制内|公务员/.test(family))famScore+=3;
+  famScore=Math.max(0,Math.min(10,famScore+1));
+
+  // Age score (gender dependent)
+  let ageScore;
+  if(raterGender==='male'){
+    if(age<=25)ageScore=25;else if(age<=28)ageScore=20;else if(age<=30)ageScore=15;
+    else if(age<=32)ageScore=8;else ageScore=3;
+  }else{
+    if(age>=28&&age<=33)ageScore=8;else if(age>=25&&age<=27)ageScore=7;
+    else if(age>=34&&age<=38)ageScore=6;else ageScore=3;
+  }
+
+  // Char default
+  let charScore=5;
+
+  // Dimension scores with weights
+  let dims;
+  if(raterGender==='male'){
+    dims=[
+      {name:'年龄',raw:ageScore,max:25},
+      {name:'外形',raw:looksScore,max:25},
+      {name:'学历',raw:eduScore,max:15},
+      {name:'职业收入',raw:incomeScore,max:10},
+      {name:'家庭',raw:famScore,max:10},
+      {name:'房车',raw:propScore,max:5},
+      {name:'性格',raw:charScore,max:10},
+    ];
+  }else{
+    let propScoreF=propScore*2;
+    dims=[
+      {name:'年龄',raw:ageScore,max:10},
+      {name:'外形',raw:Math.min(looksScore,15),max:15},
+      {name:'学历',raw:eduScore,max:15},
+      {name:'职业收入',raw:incomeScore*2.5,max:25},
+      {name:'家庭',raw:famScore*1.5,max:15},
+      {name:'房车',raw:Math.min(propScoreF,10),max:10},
+      {name:'性格',raw:charScore,max:10},
+    ];
+  }
+
+  let total=dims.reduce((s,d)=>s+Math.min(d.raw,d.max),0);
+
+  // Red flags
+  let flags=[];
+  let penalty=0;
+
+  // Double standard
+  if(mmChild==='yes_has'&&mmIntro==='no'){
+    flags.push({icon:'🚨',text:'<b>介绍人双标（铁证）</b>：介绍人有同质未婚子女，但未将此人介绍给自己子女。介绍人的行为比话术更诚实。'});
+    penalty+=15;
+  }
+  // Age paradox
+  if(raterGender==='male'&&age>=33){
+    flags.push({icon:'⚠️',text:'<b>年龄悖论</b>：33岁+女性纸面条件好却未婚，可能存在隐性原因（要求过高/性格强势/工作挤压/过往阻断）。'});
+    penalty+=8;
+  }
+  if(raterGender==='female'&&age>=35){
+    flags.push({icon:'⚠️',text:'<b>年龄偏大</b>：35岁+男性未婚，需了解原因。'});
+    penalty+=5;
+  }
+  // Matchmaker market-speak
+  if(/优秀|合适|条件|般配|门当户对/.test(mmWords)){
+    flags.push({icon:'⚠️',text:'<b>介绍人话术味重</b>：使用"优秀/合适/条件"等市场话术，属于标准化推销用语而非真心欣赏。'});
+    penalty+=5;
+  }
+  // Low income + no assets
+  if((income==='low'||income==='mid')&&prop==='none'&&car==='no'){
+    flags.push({icon:'⚠️',text:'<b>经济脆弱</b>：低收入+无房无车，经济独立能力存疑。'});
+    penalty+=5;
+  }
+  // Divorced parents
+  if(parentsM==='divorced'){
+    flags.push({icon:'ℹ️',text:'<b>父母离异</b>：原生家庭不完整，可能影响亲密关系模式。'});
+    penalty+=3;
+  }
+  // Political (minor for 体制内 family)
+  if(political==='mass'&&/(行长|局长|央企|体制内|公务员)/.test(family)){
+    flags.push({icon:'ℹ️',text:'<b>政治面貌群众</b>：体制内家庭中党员身份通常被看重。'});
+    penalty+=1;
+  }
+
+  let finalScore=Math.max(0,total-penalty);
+  let grade,gradeColor,label;
+  if(finalScore>=85){grade='A+';gradeColor='var(--green)';label='极优';}
+  else if(finalScore>=75){grade='A';gradeColor='var(--green)';label='优秀';}
+  else if(finalScore>=65){grade='B+';gradeColor='var(--cyan)';label='中上';}
+  else if(finalScore>=55){grade='B';gradeColor='var(--yellow)';label='中等';}
+  else if(finalScore>=45){grade='B-';gradeColor='var(--orange)';label='中下';}
+  else{grade='C';gradeColor='var(--red)';label='偏低';}
+
+  let marketScore=finalScore;
+  // Market adjustment: high paper score but high penalty = real value much lower
+  if(penalty>20)marketScore=Math.max(5,finalScore-15);
+  if(penalty>30)marketScore=Math.max(5,finalScore-25);
+
+  // Recommendation
+  let recClass,recText;
+  if(finalScore>=70&&penalty<=10){recClass='rec-see';recText='✅ 建议深入了解 — 综合条件优秀，值得花时间认真接触。';}
+  else if(finalScore>=50&&penalty<=20){recClass='rec-maybe';recText='🤔 可以见一面 — 条件尚可但存在顾虑，见一面用30分钟验证。';}
+  else{recClass='rec-pass';recText='❌ 建议礼貌回绝 — 综合条件或红旗数量不支持投入时间。';}
+
+  // Render
+  document.getElementById('form-page').style.display='none';
+  document.getElementById('result-page').style.display='block';
+
+  const fs=document.getElementById('final-score');
+  fs.textContent=finalScore;fs.style.color=gradeColor;
+  document.getElementById('grade').textContent=grade;document.getElementById('grade').style.color=gradeColor;
+  document.getElementById('score-label').textContent=label;
+
+  // Dimension table
+  const dt=document.getElementById('dim-table');
+  dt.innerHTML='';
+  dims.forEach(d=>{
+    const pct=(d.raw/d.max*100).toFixed(0);
+    const color=pct>=70?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
+    dt.innerHTML+=`<tr><td>${d.name}</td><td>${Math.min(d.raw,d.max)}/${d.max}</td></tr>
+    <tr><td colspan="2"><div class="dim-bar"><div class="dim-bar-fill" style="width:${pct}%;background:${color};"></div></div></td></tr>`;
+  });
+
+  // Flags
+  if(flags.length>0){
+    document.getElementById('flags-card').style.display='block';
+    document.getElementById('flags-list').innerHTML=flags.map(f=>`<div class="flag"><span class="flag-icon">${f.icon}</span><span class="flag-text">${f.text}</span></div>`).join('');
+  }
+
+  // Market analysis
+  let marketHTML=`<p style="font-size:14px;"><b>纸面分</b>：${total}/100<br><b>红旗扣分</b>：-${penalty}<br><b>综合分</b>：${finalScore}/100</p>`;
+  if(marketScore<finalScore){
+    marketHTML+=`<p style="font-size:13px;color:var(--orange);margin-top:8px;">⚠️ 市场真实分可能更低：${marketScore}/100<br>（多项红旗叠加时，纸面分虚高）</p>`;
+  }
+  marketHTML+=`<p style="font-size:12px;color:var(--text3);margin-top:8px;">分数解读：85+=极优(A+) 75+=优秀(A) 65+=中上(B+) 55+=中等(B) 45+=中下(B-) &lt;45=偏低(C)</p>`;
+  document.getElementById('market-analysis').innerHTML=marketHTML;
+
+  // Double standard
+  if(mmChild==='yes_has'&&mmIntro==='no'){
+    document.getElementById('double-standard-card').style.display='block';
+    document.getElementById('double-standard').innerHTML=`<p style="font-size:13px;color:var(--red);"><b>铁证级信号</b></p><p style="font-size:13px;color:var(--text2);margin-top:6px;">介绍人有同质未婚子女，但未将此人介绍给自己子女。<br>相亲市场中，介绍人是价值最了解的人。她推给谁不推给谁，就是她对这人的真实定价。<br><br><b>介绍人本人都不让此人进家门当儿媳/女婿，凭什么推荐给你？</b></p>`;
+  }
+
+  // Recommendation
+  const rb=document.getElementById('rec-box');
+  rb.className='recommendation '+recClass;
+  document.getElementById('rec-text').textContent=recText;
+
+  // Radar chart
+  const ctx=document.getElementById('radar').getContext('2d');
+  if(window._radar)window._radar.destroy();
+  window._radar=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:dims.map(d=>d.name),
+      datasets:[{
+        label:'得分',
+        data:dims.map(d=>Math.min(d.raw,d.max)/d.max*100),
+        backgroundColor:'rgba(6,182,212,.15)',
+        borderColor:'rgba(6,182,212,.8)',
+        pointBackgroundColor:'var(--cyan)',
+        borderWidth:2,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{r:{beginAtZero:true,max:100,ticks:{display:false},grid:{color:'var(--border)'},pointLabels:{color:'var(--text2)',font:{size:11}},angleLines:{color:'var(--border)'}}},
+      plugins:{legend:{display:false}}
+    }
+  });
+}
+
+function calculate(){calc();}
+function reset(){
+  document.getElementById('result-page').style.display='none';
+  document.getElementById('form-page').style.display='block';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
