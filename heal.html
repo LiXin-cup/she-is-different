@@ -756,7 +756,6 @@ async function sendMessage(){
       hideTyping();
       const reply = localReply(text);
       addAIMessage(reply);
-      saveMessage('assistant', reply);
     }, 800 + Math.random() * 600);
     return;
   }
@@ -811,13 +810,21 @@ function getCrisisResponse(){
 }
 
 // ============ 本地规则引擎（默认，零注册零联网） ============
+function getCurrentPhase(days){
+  if(days <= 14) return 'shock';
+  if(days <= 90) return 'acute';
+  if(days <= 180) return 'relief';
+  if(days <= 365) return 'chronic';
+  return 'integration';
+}
+
 function localReply(userMessage){
   const msg = userMessage.toLowerCase();
   const days = Math.floor((Date.now() - new Date(state.breakupDate).getTime()) / 86400000);
   const phase = getCurrentPhase(days);
 
   // 危机检测
-  if(isCrisis(userMessage)) return crisisPrompt();
+  if(isCrisis(userMessage)) return getCrisisResponse();
 
   // 睡眠相关
   if(/睡不着|失眠|睡眠|做.*梦|梦见|噩梦|睡不好/.test(msg)){
