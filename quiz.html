@@ -1238,6 +1238,67 @@ function generateReport(){
   </div>`;
 
   // ═══════════════════════════════════════════
+  // 童锦程语录（根据情感程度）
+  // ═══════════════════════════════════════════
+  const satScore=scoreSatisfaction();
+  const riskScore=scoreRedflags();
+  const pred=predictFuture();
+  const worstPath=pred[0];
+  const bestPath=pred[pred.length-1];
+
+  // 情感程度分级
+  let emotionLevel;
+  if(satScore>3.5 && riskScore<8 && bestPath>=30) emotionLevel='great';
+  else if(satScore>2.5 && riskScore<15) emotionLevel='ok';
+  else if(worstPath>=35) emotionLevel='painful';
+  else if(riskScore>=15 || satScore<2) emotionLevel='toxic';
+  else emotionLevel='confused';
+
+  const quotes={
+    great:[
+      '真诚才是最高级的套路。你们不需要伪装，做自己就是最好的关系。',
+      '好的感情不是找一个完美的人，是两个不完美的人一起变好。',
+      '别把对方的好当理所当然。今天觉得幸福的人，往往是懂得珍惜的人。',
+      '感情里最贵的不是礼物，是时间和真心。你们都在给对方最贵的东西。',
+    ],
+    ok:[
+      '感情不是一百分才及格，六十分的关系只要两个人愿意修，也能活成八十分。',
+      '吵架不可怕，可怕的是吵完了不想修。你们还有修的意愿，就还有机会。',
+      '好的关系不是没有问题，是两个人愿意一起面对问题。',
+      '别因为习惯就忘了经营。感情像植物，不浇水真的会死。',
+    ],
+    painful:[
+      '有些人不是不爱你，是爱不起。不是不想给，是真没有。',
+      '感情这东西，不是你努力就有用的。方向错了，越努力越远。',
+      '痛是因为你在乎，不是因为你弱。能痛说明你还能爱，只是别在错的人身上耗尽。',
+      '你以为放不下的是ta，其实你放不下的是那个在关系里拼命的自己。',
+      '别把"我还爱ta"和"我应该留下来"搞混了。爱一个人不代表要留在ta身边。',
+    ],
+    toxic:[
+      '对的人不需要你追，错的人你追不到。你现在追的，可能就是错的。',
+      '一段让你变得更不自信、更焦虑、更不像自己的关系，不管对方条件多好，都是错的。',
+      '先把自己活好。你若盛开蝴蝶自来，你不盛开，来了的蝴蝶也留不住。',
+      '记住：你选择离开不是放弃，是你终于学会了不委屈自己。',
+      '消耗你的不是爱情，是你对"不值得的人"的执念。',
+    ],
+    confused:[
+      '想不清楚的时候就别想了。做点别的，把注意力放回自己身上，答案会自己浮出来。',
+      '别在情绪上头的时候做决定。等三天，如果三天后还想做同样的决定，再做。',
+      '你不是不知道答案，你是不想接受答案。但逃避不会让问题消失。',
+      '感情里最大的成本不是时间，是你在不对的人身上花的时间。算清楚这笔账。',
+    ],
+  };
+
+  const pool=quotes[emotionLevel]||quotes.confused;
+  const quote=pool[Math.floor(Math.random()*pool.length)];
+
+  h+=`<div style="background:linear-gradient(135deg,rgba(253,121,168,.08),rgba(108,92,231,.08));border:1px solid var(--border);border-radius:14px;padding:24px 20px;margin:20px 0;text-align:center;">
+    <div style="font-size:11px;letter-spacing:3px;color:var(--pink);margin-bottom:12px;">童锦程说</div>
+    <div style="font-size:16px;color:#fff;line-height:2;font-weight:300;">"${quote}"</div>
+    <div style="margin-top:16px;font-size:11px;color:var(--text3);">基于你的情感程度：${emotionLevel==='great'?'甜蜜期':emotionLevel==='ok'?'磨合期':emotionLevel==='painful'?'痛苦期':emotionLevel==='toxic'?'消耗期':'迷茫期'}</div>
+  </div>`;
+
+  // ═══════════════════════════════════════════
   // NEW: Share Section
   // ═══════════════════════════════════════════
   h+=`<div class="share-section">
