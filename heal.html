@@ -474,6 +474,12 @@ function saveState(){
 
 // ============ INIT ============
 loadState();
+// 数据兼容：如果旧数据没有 breakupDate 或为空，重置入门
+if(state.setupDone && !state.breakupDate){
+  state.setupDone = false;
+  state.apiKey = '';
+  saveState();
+}
 if(state.setupDone){
   showMain();
 }else{
@@ -820,15 +826,16 @@ function getCurrentPhase(days){
 
 function localReply(userMessage){
   const msg = userMessage.toLowerCase();
-  const days = Math.floor((Date.now() - new Date(state.breakupDate).getTime()) / 86400000);
-  const phase = getCurrentPhase(days);
+  const days = state.breakupDate ? Math.floor((Date.now() - new Date(state.breakupDate).getTime()) / 86400000) : 0;
+  const safeDays = (isNaN(days) || days < 0) ? 0 : days;
+  const phase = getCurrentPhase(safeDays);
 
   // 危机检测
   if(isCrisis(userMessage)) return getCrisisResponse();
 
   // 睡眠相关
   if(/睡不着|失眠|睡眠|做.*梦|梦见|噩梦|睡不好/.test(msg)){
-    return `分手后${days}天，睡眠差是正常的。你的神经系统还在"待命模式"——4年多的关系形成了条件反射，大脑还没学会"她不在了也可以关机"。
+    return `分手后${safeDays}天，睡眠差是正常的。你的神经系统还在"待命模式"——4年多的关系形成了条件反射，大脑还没学会"她不在了也可以关机"。
 
 这不是你的问题，是生理反应。
 
@@ -902,13 +909,13 @@ ${days < 30 ? '前30天愤怒是最强烈的阶段——你付出了9.5，她给
   // 阶段性鼓励
   const phaseReply = {
     shock: `你现在处于冲击期（0-14天）。所有感受都是正常的——麻木、否认、愤怒、崩溃，这些会交替出现。不需要"坚强"，也不需要"想开"。让它来，让它过。`,
-    acute: `你现在处于急性期（15-90天）。这是最难的阶段。睡眠差、情绪波动大、反复想念——都是预期内的。你不是有问题，你只是在第${days}天。`,
+    acute: `你现在处于急性期（15-90天）。这是最难的阶段。睡眠差、情绪波动大、反复想念——都是预期内的。你不是有问题，你只是在第${safeDays}天。`,
     relief: `你现在处于缓解期（3-6个月）。最痛的时期正在过去。你可能会发现自己偶尔能笑了——那不是背叛，那是疗愈。`,
     chronic: `你现在处于慢性恢复期（6-12个月）。情绪更稳定了，但偶尔还会被触发。这很正常——触发不等于倒退。`,
     integration: `你现在处于整合期（1年以上）。大部分时候你不再被这件事困扰了。如果有偶尔的难过，那只是记忆，不是伤口。`,
   };
 
-  return phaseReply[phase] || `我听到了你说的话。你现在在第${days}天，${phase === 'acute' ? '急性期' : phase === 'shock' ? '冲击期' : '恢复期'}。
+  return phaseReply[phase] || `我听到了你说的话。你现在在第${safeDays}天，${phase === 'acute' ? '急性期' : phase === 'shock' ? '冲击期' : '恢复期'}。
 
 想说什么都可以，不需要组织好语言。你今天最难受的是什么？`;
 }
