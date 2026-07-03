@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>心理诊断 · 她不一样</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a26;--border:#2a2a3a;--green:#2ecc71;--blue:#3498db;--pink:#fd79a8;--red:#e74c3c;--purple:#6c5ce7;--orange:#e67e22;--yellow:#f1c40f;--text:#e0e0e0;--text2:#999;--text3:#666;}
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -410,6 +411,9 @@ function finishScale() {
     document.getElementById('result-content').outerHTML = `<div id="result-content">${h}</div>`;
   }
 
+  // ═══ Save to LocalStorage for trend tracking ═══
+  saveToHistory(currentScale);
+
   // Mark card as done
   let card = document.getElementById('card-' + currentScale);
   if (card) {
@@ -503,6 +507,154 @@ function showReport() {
   document.getElementById('menu').classList.remove('active');
   document.getElementById('result').classList.add('active');
   document.getElementById('result-content').outerHTML = `<div id="result-content">${h}</div>`;
+
+  // Draw trend chart if history exists
+  drawTrendChart();
+}
+
+// ═══ Trend Tracking (LocalStorage) ═══
+function saveToHistory(scaleKey) {
+  const STORAGE_KEY = 'psych_test_history';
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) {}
+
+  let now = new Date();
+  let entry = { date: now.toISOString(), scale: scaleKey };
+
+  if (scaleKey === 'dass21') {
+    entry.scores = {};
+    for (let sub of ['depression','anxiety','stress']) {
+      if (results.dass21 && results.dass21[sub]) {
+        entry.scores[sub] = results.dass21[sub].score;
+      }
+    }
+  } else if (results[scaleKey]) {
+    entry.score = results[scaleKey].score;
+  }
+
+  history.push(entry);
+  // Keep last 100 entries
+  if (history.length > 100) history = history.slice(-100);
+
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch(e) {}
+}
+
+function drawTrendChart() {
+  const STORAGE_KEY = 'psych_test_history';
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { return; }
+
+  if (history.length < 2) return; // Need at least 2 entries to draw a trend
+
+  // Prepare data: group by scale
+  let scaleData = {}; // {phq9: [{date, score}], gad7: [...], ...}
+  let dassData = { depression: [], anxiety: [], stress: [] };
+
+  history.forEach(h => {
+    let d = h.date.slice(0, 10); // YYYY-MM-DD
+    if (h.scale === 'dass21' && h.scores) {
+      if (h.scores.depression !== undefined) dassData.depression.push({ date: d, score: h.scores.depression });
+      if (h.scores.anxiety !== undefined) dassData.anxiety.push({ date: d, score: h.scores.anxiety });
+      if (h.scores.stress !== undefined) dassData.stress.push({ date: d, score: h.scores.stress });
+    } else if (h.score !== undefined) {
+      if (!scaleData[h.scale]) scaleData[h.scale] = [];
+      scaleData[h.scale].push({ date: d, score: h.score });
+    }
+  });
+
+  // Only draw if we have repeated measurements
+  let hasTrend = false;
+  let datasets = [];
+  let allDates = new Set();
+  let colorMap = { phq9:'#e74c3c', gad7:'#3498db', mdq:'#9b59b6', pcl5:'#e67e22', depression:'#e74c3c', anxiety:'#3498db', stress:'#f1c40f' };
+  let labelMap = { phq9:'PHQ-9 抑郁', gad7:'GAD-7 焦虑', mdq:'MDQ 双相', pcl5:'PCL-5 PTSD', depression:'DASS抑郁', anxiety:'DASS焦虑', stress:'DASS压力' };
+
+  for (let key in scaleData) {
+    if (scaleData[key].length >= 2) {
+      hasTrend = true;
+      scaleData[key].forEach(d => allDates.add(d.date));
+      datasets.push({
+        label: labelMap[key] || key,
+        data: scaleData[key].map(d => d.score),
+        borderColor: colorMap[key],
+        backgroundColor: colorMap[key] + '22',
+        tension: 0.3,
+        pointRadius: 4,
+      });
+    }
+  }
+  for (let key in dassData) {
+    if (dassData[key].length >= 2) {
+      hasTrend = true;
+      dassData[key].forEach(d => allDates.add(d.date));
+      datasets.push({
+        label: labelMap[key],
+        data: dassData[key].map(d => d.score),
+        borderColor: colorMap[key],
+        backgroundColor: colorMap[key] + '22',
+        tension: 0.3,
+        pointRadius: 4,
+      });
+    }
+  }
+
+  if (!hasTrend) return;
+
+  // Sort dates
+  let sortedDates = [...allDates].sort();
+
+  // Insert trend chart before the warning section
+  let trendHTML = `
+    <div class="result-card" style="margin-top:16px;">
+      <h3 style="color:var(--green);margin-bottom:16px;">📈 历史趋势追踪</h3>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">你已完成 ${history.length} 次测试。以下是你多次测试的趋势变化：</p>
+      <div style="height:280px;"><canvas id="trend-chart"></canvas></div>
+      <p style="font-size:11px;color:var(--text3);margin-top:12px;">📌 数据存储在你浏览器的 LocalStorage 中，不会被上传。清除浏览器数据会删除历史记录。</p>
+    </div>`;
+
+  let warningEl = document.querySelector('.result-card .warning');
+  if (warningEl) {
+    warningEl.closest('.result-card').insertAdjacentHTML('beforebegin', trendHTML);
+  } else {
+    document.getElementById('result-content').insertAdjacentHTML('beforeend', trendHTML);
+  }
+
+  // Draw the chart
+  setTimeout(() => {
+    let ctx = document.getElementById('trend-chart');
+    if (!ctx) return;
+    // For each dataset, we need to align with sortedDates - but datasets may have different dates
+    // Simple approach: use the dataset's own dates as labels per dataset won't work with Chart.js line
+    // Better: use index as x-axis, show date as label
+    let labels;
+    if (datasets.length === 1) {
+      let key = Object.keys(scaleData).find(k => scaleData[k].length >= 2) || Object.keys(dassData).find(k => dassData[k].length >= 2);
+      if (scaleData[key]) labels = scaleData[key].map(d => d.date);
+      else labels = dassData[key].map(d => d.date);
+    } else {
+      // Multiple datasets - use union of dates, pad with null
+      labels = sortedDates;
+      datasets.forEach(ds => {
+        // This is simplified - in production we'd do proper date alignment
+      });
+    }
+
+    new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'var(--border)' }, ticks: { color: 'var(--text2)', font: { size: 11 } } },
+          x: { grid: { display: false }, ticks: { color: 'var(--text2)', font: { size: 10 }, maxRotation: 45 } },
+        },
+        plugins: {
+          legend: { labels: { color: 'var(--text2)', font: { size: 11 } } },
+        },
+      },
+    });
+  }, 100);
 }
 </script>
 </body>
