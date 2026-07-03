@@ -155,7 +155,21 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;hei
     </div>
 
     <div class="form-group">
-      <h3>介绍人分析（可选但强烈建议填写）</h3>
+      <h3>介绍来源</h3>
+      <div class="form-row single">
+        <label>这个对象是通过什么渠道介绍的？</label>
+        <select id="matchmaker_type">
+          <option value="friend">亲友/熟人介绍</option>
+          <option value="agency">相亲机构/婚介平台</option>
+          <option value="app">相亲App/线上平台</option>
+          <option value="self">自己认识的</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 亲友介绍模式 -->
+    <div class="form-group" id="friend-fields">
+      <h3>介绍人分析（亲友模式）</h3>
       <div class="form-row single"><label>介绍人话术</label><textarea id="matchmaker_words" placeholder="把介绍人原话贴进来，如'她各方面都很优秀，你们条件挺合适的'"></textarea></div>
       <div class="form-row">
         <div><label>介绍人是否有同质未婚子女？</label>
@@ -171,6 +185,48 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;hei
             <option value="unknown">不确定</option>
             <option value="no">没有介绍给自己子女</option>
             <option value="yes">介绍给了自己子女</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 相亲机构模式 -->
+    <div class="form-group" id="agency-fields" style="display:none;">
+      <h3>机构分析（商业相亲模式）</h3>
+      <div class="form-row">
+        <div><label>机构收费模式</label>
+          <select id="agency_fee">
+            <option value="unknown">不确定</option>
+            <option value="free">免费/平台免费匹配</option>
+            <option value="low">低收费（<3000元）</option>
+            <option value="mid">中收费（3000-1万）</option>
+            <option value="high">高收费（1万-5万）</option>
+            <option value="vh">超高收费（5万+）VIP制</option>
+          </select>
+        </div>
+        <div><label>机构是否看过对方身份验证？</label>
+          <select id="agency_verify">
+            <option value="unknown">不确定</option>
+            <option value="yes">有身份/学历/收入验证</option>
+            <option value="no">无验证/仅自报</option>
+            <option value="fake">发现过虚假信息</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row single"><label>机构/红娘原话</label><textarea id="agency_words" placeholder="如'这个女生条件非常好，很少放出来的'"></textarea></div>
+      <div class="form-row">
+        <div><label>机构是否催促尽快见面/签约？</label>
+          <select id="agency_pressure">
+            <option value="no">没有催促</option>
+            <option value="mild">有轻微催促</option>
+            <option value="high">强烈催促（紧迫感）</option>
+          </select>
+        </div>
+        <div><label>机构推荐人数</label>
+          <select id="agency_volume">
+            <option value="one">只推荐了这一个</option>
+            <option value="few">同时推荐了几个</option>
+            <option value="many">批量推荐了很多</option>
           </select>
         </div>
       </div>
@@ -227,6 +283,13 @@ let raterGender='male';
 document.querySelectorAll('#rater-gender .radio-opt').forEach(o=>{
   o.onclick=()=>{document.querySelectorAll('#rater-gender .radio-opt').forEach(x=>x.classList.remove('active'));o.classList.add('active');raterGender=o.dataset.val;};
 });
+
+// Matchmaker type toggle
+document.getElementById('matchmaker_type').onchange=function(){
+  const v=this.value;
+  document.getElementById('friend-fields').style.display = (v==='friend')?'block':'none';
+  document.getElementById('agency-fields').style.display = (v==='agency'||v==='app')?'block':'none';
+};
 
 function calc(){
   const age=+document.getElementById('age').value;
@@ -356,6 +419,52 @@ function calc(){
   if(political==='mass'&&/(行长|局长|央企|体制内|公务员)/.test(family)){
     flags.push({icon:'ℹ️',text:'<b>政治面貌群众</b>：体制内家庭中党员身份通常被看重。'});
     penalty+=1;
+  }
+
+  // ═══ 相亲机构专属红旗 ═══
+  const mmType=document.getElementById('matchmaker_type').value;
+  if(mmType==='agency'||mmType==='app'){
+    const aFee=document.getElementById('agency_fee').value;
+    const aVerify=document.getElementById('agency_verify').value;
+    const aWords=document.getElementById('agency_words').value;
+    const aPressure=document.getElementById('agency_pressure').value;
+    const aVolume=document.getElementById('agency_volume').value;
+
+    // 高收费 = 利益驱动，信息会被包装
+    if(aFee==='high'||aFee==='vh'){
+      flags.push({icon:'⚠️',text:'<b>高收费机构</b>：机构收取高额费用（1万+），利益驱动下会对候选人信息进行美化包装。所有条件都需要交叉验证。'});
+      penalty+=6;
+    }
+    // 无身份验证 = 信息真实性存疑
+    if(aVerify==='no'){
+      flags.push({icon:'⚠️',text:'<b>无身份验证</b>：机构未验证对方身份/学历/收入，所有信息都是自报，真实性存疑。'});
+      penalty+=5;
+    }
+    // 发现过虚假信息
+    if(aVerify==='fake'){
+      flags.push({icon:'🚨',text:'<b>机构诚信问题</b>：该机构被发现过虚假信息。不仅此人需要警惕，建议换机构。'});
+      penalty+=12;
+    }
+    // 强烈催促签约/见面 = 销售压力
+    if(aPressure==='high'){
+      flags.push({icon:'⚠️',text:'<b>销售压力</b>：机构强烈催促见面/签约，典型的"制造紧迫感"销售手法。好的姻缘不需要催。'});
+      penalty+=4;
+    }
+    // 批量推荐 = 你只是流水线上的一个
+    if(aVolume==='many'){
+      flags.push({icon:'⚠️',text:'<b>批量推荐模式</b>：机构同时推荐很多人，说明你是流水线客户而非精准匹配。匹配质量存疑。'});
+      penalty+=3;
+    }
+    // 机构话术检测
+    if(/非常好|很少|难得|优质|精品|稀缺|抢手|错过/.test(aWords)){
+      flags.push({icon:'⚠️',text:'<b>机构话术味重</b>：使用"非常好/很少/稀缺/错过"等饥饿营销话术。商业机构的本质是让你尽快付费，不是帮你找到对的人。'});
+      penalty+=4;
+    }
+    // 机构默认扣分（利益冲突）
+    if(mmType==='agency'){
+      flags.push({icon:'ℹ️',text:'<b>机构利益冲突</b>：商业婚介的收入来自"让你持续使用服务"，不是"帮你找到对象就停"。动机与你的目标不完全一致。'});
+      penalty+=2;
+    }
   }
 
   let finalScore=Math.max(0,total-penalty);
