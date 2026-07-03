@@ -286,54 +286,55 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang 
 
 // --- Module 1: Attachment (ECR-S) ---
 const mod1_partA = [
-  {text:'工作被领导骂了，我第一个想跟ta吐槽',dim:'avo',rev:true},
-  {text:'ta半天没回消息，我就开始胡思乱想',dim:'anx'},
-  {text:'ta突然要来接我下班，我会觉得有点压力',dim:'avo'},
-  {text:'我总担心ta不够在乎我',dim:'anx'},
-  {text:'ta出差几天，我能安心过自己的生活',dim:'avo',rev:true},
-  {text:'周末ta说要跟朋友聚会，我会有点失落',dim:'anx'},
-  {text:'ta心情不好时，我不会太放在心上',dim:'avo'},
-  {text:'我总害怕ta哪天会突然提分手',dim:'anx'},
-  {text:'遇到困难时，我会主动跟ta商量',dim:'avo',rev:true},
-  {text:'ta突然要查我手机，我会很不舒服',dim:'avo'},
-  {text:'ta晚安说得稍微晚点，我就觉得是不是出问题了',dim:'anx'},
-  {text:'我完全信任ta不会做对不起我的事',dim:'avo',rev:true}
+  // 你的依恋 — 全新题目（生活化、去极端化、含混淆题）
+  {text:'下班路上看到好吃的，我会拍照发给ta',dim:'avo',rev:true},
+  {text:'ta三个小时没回消息，我会反复看聊天记录',dim:'anx'},
+  {text:'朋友约我周末出去玩，我通常先看ta有没有安排',dim:'anx'},
+  {text:'ta突然给我买了杯奶茶，我会觉得有点不好意思',dim:'avo'},
+  {text:'我习惯一个人待着的时候也能很自在',dim:'avo',rev:true},
+  {text:'看到ta发了一条有点丧的朋友圈，我会马上私聊问怎么了',dim:'anx'},
+  {text:'ta跟异性同事走得近，我不会太在意',dim:'avo',rev:true},
+  {text:'吵架之后，我通常会先低头',dim:'anx'},
+  {text:'周末各自忙各自的，我觉得这样挺好',dim:'avo',rev:true},
+  {text:'ta如果突然说"我们需要谈谈"，我心里会咯噔一下',dim:'anx'},
+  {text:'我觉得两个人不一定要每天都说晚安',dim:'avo',rev:true},
+  {text:'看到有趣的视频，我第一个想到的是分享给ta',dim:'avo',rev:true},
+  {text:'ta回复消息的语气稍微冷淡一点，我就能感觉到',dim:'anx'},
+  {text:'我觉得两个人保持各自的空间很重要',dim:'avo',rev:true},
+  {text:'ta说"随便"的时候，我会反复琢磨ta到底想吃什么',dim:'anx'}
 ];
-const mod1_partB = mod1_partA.map(q=>({
-  text:q.text.replace(/我/g,'ta').replace('向我','向我').replace('我的','ta的'),
-  dim:q.dim, rev:q.rev
-}));
-// Fix partner questions
-mod1_partB.forEach(q=>{
-  q.text=q.text
-    .replace('ta会向伴侣','ta会向你')
-    .replace('ta需要伴侣','ta需要你')
-    .replace('伴侣想和ta','你想和ta')
-    .replace('ta是爱ta','你是爱ta')
-    .replace('ta在乎ta','在乎ta')
-    .replace('ta依赖伴侣','ta依赖你')
-    .replace('伴侣不能时刻陪伴ta','你不能时刻陪伴ta')
-    .replace('ta不太在意伴侣','ta不太在意你')
-    .replace('ta担心伴侣离开ta','ta担心你离开ta')
-    .replace('ta愿意和伴侣','ta愿意和你')
-    .replace('ta靠得太近','ta靠得太近')
-    .replace('ta担心你不是真的爱ta','ta担心你不是真的爱ta')
-    .replace('ta对伴侣的信任','ta对你的信任');
-});
+// ta的依恋 — 完全不同的题目（不是机械替换）
+const mod1_partB = [
+  {text:'ta会主动跟你分享今天发生的琐事',dim:'avo',rev:true},
+  {text:'你跟朋友出去玩，ta会问你几点回来',dim:'anx'},
+  {text:'ta有自己的兴趣爱好，不会整天粘着你',dim:'avo',rev:true},
+  {text:'你跟异性朋友聊天被ta看到了，ta会追问',dim:'anx'},
+  {text:'ta遇到开心的事，第一个想告诉的是你',dim:'avo',rev:true},
+  {text:'你提出想单独旅行，ta会表现出不安',dim:'anx'},
+  {text:'ta不怎么翻你的手机或社交账号',dim:'avo',rev:true},
+  {text:'你有一整天没联系ta，ta会主动来找你',dim:'anx'},
+  {text:'吵架时ta倾向于先冷静一段时间再说',dim:'avo'},
+  {text:'ta会在朋友圈发你们的合照或暗示性的内容',dim:'anx'},
+  {text:'你发现ta有自己的秘密小号或私密空间',dim:'avo'},
+  {text:'ta记得你随口说过的小事（比如喜欢吃什么）',dim:'avo',rev:true},
+  {text:'你跟别人走得近时，ta会用开玩笑的语气说酸话',dim:'anx'},
+  {text:'ta在你面前从不示弱或哭',dim:'avo'},
+  {text:'你们分开几天后见面，ta会表现出明显的开心',dim:'anx'}
+];
 
 // --- Module 2: Satisfaction (RAS) ---
 const mod2 = [
-  {text:'ta满足你各项需求的程度如何？',rev:false},
-  {text:'整体而言，你对你们的关系有多满意？',rev:false},
-  {text:'和大多数人相比，你觉得你们的关系如何？',rev:false},
-  {text:'你是否曾想过，如果没有这段关系会更好？',rev:true},
-  {text:'你们的关系符合你原先的期待吗？',rev:false},
-  {text:'你有多爱ta？',rev:false},
-  {text:'你们的关系中存在多少问题？',rev:true}
+  {text:'最近一周，你和ta在一起的时光让你觉得舒服吗',rev:false},
+  {text:'你觉得ta懂你的感受和想法吗',rev:false},
+  {text:'你们最近有没有因为小事闹别扭',rev:true},
+  {text:'如果重新选择，你还会选择和ta在一起吗',rev:false},
+  {text:'你觉得这段关系让你变得更好了还是更累了',rev:false},
+  {text:'你最近有没有想过"单身可能更轻松"',rev:true},
+  {text:'你觉得你们之间的话题还多吗',rev:false}
 ];
 const mod2_labels = [
-  ['非常低','非常高'],['非常不满意','非常满意'],['非常不好','非常好'],
-  ['从没想过','经常想'],['非常不符合','非常符合'],['一点也不','非常爱'],['非常少','非常多']
+  ['很不舒服','很舒服'],['完全不懂','非常懂'],['几乎没有','经常有'],
+  ['不会了','一定会'],['更累了','更好了'],['从没想过','经常想'],['很少了','很多']
 ];
 
 // --- Module 3: Love Language ---
@@ -425,16 +426,16 @@ const mod4 = [
 
 // --- Module 5: Red Flags ---
 const mod5 = [
-  {text:'ta会突然对你很热情，然后又突然冷淡'},
-  {text:'ta会查看你的手机、社交账号或行踪'},
-  {text:'ta经常说"你要是离开我我就……"'},
-  {text:'你不敢跟ta提某些话题，怕ta生气'},
-  {text:'ta在朋友面前和独处时判若两人'},
-  {text:'你经常觉得自己不够好，配不上ta'},
-  {text:'ta说过"除了我没人会要你"之类的话'},
-  {text:'你们的关系时好时坏，但你始终无法离开'},
-  {text:'ta消失一段时间后突然出现，像什么都没发生'},
-  {text:'你在这段关系中变得更焦虑、更不自信了'}
+  {text:'ta有时候对你特别好，有时候又莫名其妙地冷'},
+  {text:'ta会问你在哪、跟谁在一起，频率比你舒服的多一点'},
+  {text:'吵架时ta说过一些让你事后想起来还是会难受的话'},
+  {text:'有些话题你会下意识地避开，因为提了ta可能会不高兴'},
+  {text:'ta在朋友面前和在只有你们两个人的时候，态度有点不一样'},
+  {text:'跟ta在一起之后，你觉得自己变得不如以前自信了'},
+  {text:'ta偶尔会让你觉得"都是你的错"'},
+  {text:'你们的关系好起来很好，但冷的时候你不知道什么时候才能好'},
+  {text:'ta有时候会消失一阵子，回来之后像什么都没发生过'},
+  {text:'你发现自己最近比以前更容易紧张或焦虑了'}
 ];
 
 // ═══════════════════════════════════════════
@@ -445,8 +446,8 @@ let currentModule = 0;
 let currentQ = 0;
 
 const moduleMeta = [
-  {id:'attachment',name:'依恋类型',icon:'💭',sub:'第一部分：测你的依恋类型（12题）\n基于 ECR-S 量表，测量你的焦虑维度和回避维度'},
-  {id:'attachmentB',name:'ta的依恋类型',icon:'🔍',sub:'第二部分：推测ta的依恋类型（12题）\n根据你观察到的ta的行为，ta最可能是哪种类型？'},
+  {id:'attachment',name:'依恋类型',icon:'💭',sub:'第一部分：测你的依恋类型（15题）\n基于 ECR-S 量表，测量你的焦虑维度和回避维度'},
+  {id:'attachmentB',name:'ta的依恋类型',icon:'🔍',sub:'第二部分：推测ta的依恋类型（15题）\n根据你观察到的ta的行为，ta最可能是哪种类型？'},
   {id:'satisfaction',name:'关系满意度',icon:'📊',sub:'第三部分：关系满意度（7题）\n基于 RAS 量表，测你对这段关系的整体满意度'},
   {id:'loveLang',name:'爱的语言',icon:'💝',sub:'第四部分：爱的语言（15题）\n基于 Chapman 五爱语理论，测你的爱语是什么'},
   {id:'gottman',name:'沟通模式',icon:'🗣️',sub:'第五部分：沟通模式（8题）\n基于 Gottman 四骑士理论，测你们的沟通健康度'},
@@ -475,8 +476,8 @@ function startCurrentModule(){
 function renderQuestion(){
   const mod=currentModule;
   let totalQ, questions;
-  if(mod===0){questions=mod1_partA;totalQ=12;}
-  else if(mod===1){questions=mod1_partB;totalQ=12;}
+  if(mod===0){questions=mod1_partA;totalQ=15;}
+  else if(mod===1){questions=mod1_partB;totalQ=15;}
   else if(mod===2){questions=mod2;totalQ=7;}
   else if(mod===3){questions=mod3;totalQ=15;}
   else if(mod===4){questions=mod4;totalQ=8;}
@@ -564,7 +565,7 @@ function nextQ(val){
 
   currentQ++;
   let totalQ;
-  if(mod<=1) totalQ=12;
+  if(mod<=1) totalQ=15;
   else if(mod===2) totalQ=7;
   else if(mod===3) totalQ=15;
   else if(mod===4) totalQ=8;
