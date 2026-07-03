@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>她不一样 · 你们能走多远？</title>
+<meta property="og:title" content="她不一样 · 你们能走多远？">
+<meta property="og:description" content="64道题测出你们的依恋匹配度、沟通模式和未来走向">
+<meta property="og:type" content="website">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a26;--border:#2a2a3a;--green:#2ecc71;--blue:#3498db;--orange:#e67e22;--pink:#fd79a8;--red:#e74c3c;--purple:#6c5ce7;--yellow:#f1c40f;--cyan:#06b6d4;--text:#e0e0e0;--text2:#999;--text3:#666;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif;line-height:1.8;-webkit-font-smoothing:antialiased;}
+.container{max-width:720px;margin:0 auto;padding:20px 16px;min-height:100vh;}
+.page{display:none;animation:fadeIn .4s ease;}.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Hero */
+.hero{text-align:center;padding:48px 0 32px;}
+.hero-label{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--pink);margin-bottom:16px;font-weight:500;}
+.hero-name{font-size:28px;font-weight:200;letter-spacing:4px;color:#fff;margin-bottom:12px;}
+.hero-sub{font-size:14px;color:var(--text2);letter-spacing:1px;max-width:500px;margin:0 auto;line-height:2;}
+.hero-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent);margin:24px auto;}
+
+/* Buttons */
+.btn{display:inline-block;padding:14px 36px;border-radius:30px;font-size:15px;font-weight:500;cursor:pointer;border:none;transition:all .25s;text-decoration:none;}
+.btn-primary{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(253,121,168,.25);}
+.btn-secondary{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-secondary:hover{border-color:var(--text2);color:var(--text);}
+.btn-small{padding:10px 24px;font-size:13px;border-radius:20px;}
+.btn-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px;}
+
+/* Tags */
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;margin:2px 3px;}
+.tag-green{background:rgba(46,204,113,.15);color:var(--green);}
+.tag-blue{background:rgba(52,152,219,.15);color:var(--blue);}
+.tag-orange{background:rgba(230,126,34,.15);color:var(--orange);}
+.tag-pink{background:rgba(253,121,168,.15);color:var(--pink);}
+.tag-red{background:rgba(231,76,60,.15);color:var(--red);}
+.tag-purple{background:rgba(108,92,231,.15);color:var(--purple);}
+.tag-cyan{background:rgba(6,182,212,.15);color:var(--cyan);}
+.tag-yellow{background:rgba(241,196,15,.15);color:var(--yellow);}
+
+/* Progress */
+.progress-bar{width:100%;height:4px;background:var(--card2);border-radius:2px;margin:20px 0;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .3s ease;}
+.progress-text{font-size:12px;color:var(--text3);text-align:center;margin-bottom:8px;}
+.progress-module{font-size:13px;color:var(--pink);text-align:center;margin-bottom:4px;font-weight:500;}
+
+/* Question */
+.question-wrap{padding:40px 0;}
+.q-number{font-size:12px;color:var(--pink);letter-spacing:2px;margin-bottom:8px;}
+.q-text{font-size:18px;font-weight:400;color:#fff;line-height:1.8;margin-bottom:32px;}
+.q-scale{display:flex;justify-content:space-between;gap:8px;margin-top:8px;}
+.q-scale-num{width:42px;height:42px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text2);transition:all .2s;}
+.q-scale-num:hover{border-color:var(--pink);color:var(--text);}
+.q-scale-num.selected{border-color:var(--pink);background:var(--pink);color:#fff;}
+.q-scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:8px;}
+
+/* Choice pairs */
+.q-pair{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+.q-pair-opt{padding:16px 18px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;font-size:14px;color:var(--text2);text-align:center;}
+.q-pair-opt:hover{border-color:var(--pink);color:var(--text);}
+.q-pair-opt.selected{border-color:var(--pink);background:rgba(253,121,168,.08);color:#fff;}
+
+/* Scenario options */
+.q-scenario{margin-top:16px;}
+.q-scenario-opt{padding:14px 18px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;font-size:13px;color:var(--text2);margin-bottom:8px;line-height:1.6;}
+.q-scenario-opt:hover{border-color:var(--pink);color:var(--text);}
+.q-scenario-opt.selected{border-color:var(--pink);background:rgba(253,121,168,.08);color:#fff;}
+
+/* Three choice */
+.q-three{display:flex;gap:10px;margin-top:16px;}
+.q-three-opt{flex:1;padding:14px 10px;border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;font-size:13px;color:var(--text2);text-align:center;}
+.q-three-opt:hover{border-color:var(--pink);color:var(--text);}
+.q-three-opt.selected{border-color:var(--pink);background:rgba(253,121,168,.08);color:#fff;}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;}
+.card-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title .dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+
+/* Section */
+.section{margin-top:32px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.section-num{font-size:12px;color:var(--pink);font-weight:600;letter-spacing:2px;min-width:28px;}
+.section-title{font-size:18px;font-weight:500;color:#fff;letter-spacing:1px;}
+
+/* Transition */
+.transition{text-align:center;padding:60px 0;}
+.transition-icon{font-size:48px;margin-bottom:16px;}
+.transition-title{font-size:20px;font-weight:300;color:#fff;letter-spacing:2px;margin-bottom:12px;}
+.transition-sub{font-size:13px;color:var(--text2);line-height:2;max-width:400px;margin:0 auto 24px;}
+
+/* Result type badge */
+.type-badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:14px;font-weight:600;margin:8px 0;}
+
+/* Prob bars */
+.prob-bar{display:flex;align-items:center;gap:10px;margin:8px 0;}
+.prob-label{min-width:120px;font-size:13px;color:var(--text2);}
+.prob-track{flex:1;height:6px;border-radius:3px;background:var(--card2);overflow:hidden;}
+.prob-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+.prob-value{min-width:40px;font-size:13px;font-weight:600;text-align:right;}
+
+/* Highlight/Warning boxes */
+.highlight-box{background:linear-gradient(135deg,rgba(253,121,168,.08),rgba(108,92,231,.08));border:1px solid rgba(253,121,168,.2);border-radius:12px;padding:20px;margin:16px 0;}
+.warning-box{background:linear-gradient(135deg,rgba(231,76,60,.08),rgba(230,126,34,.08));border:1px solid rgba(231,76,60,.2);border-radius:12px;padding:20px;margin:16px 0;}
+.green-box{background:linear-gradient(135deg,rgba(46,204,113,.08),rgba(6,182,212,.08));border:1px solid rgba(46,204,113,.2);border-radius:12px;padding:20px;margin:16px 0;}
+.blue-box{background:linear-gradient(135deg,rgba(52,152,219,.08),rgba(108,92,231,.08));border:1px solid rgba(52,152,219,.2);border-radius:12px;padding:20px;margin:16px 0;}
+.quote-box{background:var(--card2);border-left:3px solid var(--pink);padding:14px 18px;margin:12px 0;border-radius:0 8px 8px 0;font-size:13px;color:var(--text2);font-style:italic;}
+
+/* Love lang grid */
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;}
+.lang-card{text-align:center;padding:20px 12px;border-radius:12px;border:1px solid var(--border);transition:all .2s;}
+.lang-card.top{border-color:var(--pink);background:rgba(253,121,168,.06);}
+.lang-icon{font-size:28px;margin-bottom:8px;}
+.lang-name{font-size:13px;font-weight:600;color:#fff;}
+.lang-score{font-size:24px;font-weight:700;margin:8px 0 4px;}
+.lang-desc{font-size:11px;color:var(--text3);line-height:1.6;}
+
+/* Chart containers */
+.chart-wrap{width:100%;max-width:400px;margin:16px auto;}
+
+/* Footer */
+.footer{text-align:center;padding:40px 0 20px;font-size:11px;color:var(--text3);letter-spacing:1px;}
+
+/* Loading */
+.loading{text-align:center;padding:60px 0;}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--pink);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Welcome Page Feature Cards */
+.welcome-features{display:flex;gap:12px;margin:32px 0;justify-content:center;flex-wrap:wrap;}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 16px;text-align:center;flex:1;min-width:140px;max-width:200px;transition:all .3s;}
+.feature-card:hover{border-color:var(--pink);transform:translateY(-4px);box-shadow:0 8px 24px rgba(253,121,168,.1);}
+.feature-card .fc-icon{font-size:32px;margin-bottom:12px;}
+.feature-card .fc-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:6px;}
+.feature-card .fc-desc{font-size:11px;color:var(--text2);line-height:1.6;}
+
+/* Future prediction bars */
+.predict-bar-wrap{margin:12px 0;}
+.predict-bar-label{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.predict-bar-name{font-size:14px;font-weight:600;}
+.predict-bar-pct{font-size:14px;font-weight:700;margin-left:auto;}
+.predict-bar-track{height:10px;border-radius:5px;background:var(--card2);overflow:hidden;}
+.predict-bar-fill{height:100%;border-radius:5px;transition:width 1s ease;}
+.predict-bar-desc{font-size:12px;color:var(--text2);margin-top:6px;line-height:1.7;}
+
+/* Responsive */
+@media(max-width:500px){
+  .hero-name{font-size:22px;letter-spacing:2px;}
+  .q-text{font-size:16px;}
+  .q-scale-num{width:36px;height:36px;font-size:13px;}
+  .lang-grid{grid-template-columns:1fr 1fr;}
+  .q-three{flex-direction:column;}
+  .welcome-features{flex-direction:column;align-items:center;}
+  .feature-card{max-width:100%;}
+}
+
+/* Mobile Likert optimization */
+@media(max-width:768px){
+  .likert-options{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+  .likert-options .opt{min-width:36px;padding:8px 4px;font-size:12px;}
+}
+
+/* Share section */
+.share-section{text-align:center;padding:40px 0;}
+.share-section .share-btn{padding:14px 32px;border-radius:30px;background:linear-gradient(135deg,#fd79a8,#6c5ce7);color:#fff;border:none;font-size:15px;cursor:pointer;transition:all .25s;}
+.share-section .share-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(253,121,168,.25);}
+.share-copied{color:var(--green);font-size:13px;margin-top:8px;opacity:0;transition:opacity .3s;}
+.share-copied.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ═══ PAGE 0: PUBLIC WELCOME ═══ -->
+<div class="page active" id="page-welcome">
+  <div class="hero" style="padding:60px 0 40px;">
+    <div class="hero-label">Relationship Deep Analysis</div>
+    <div class="hero-name" style="font-size:36px;letter-spacing:6px;">她不一样</div>
+    <div class="hero-sub" style="font-size:18px;color:#fff;font-weight:300;margin-top:12px;">你们能走多远？</div>
+    <div class="hero-line"></div>
+    <div style="font-size:13px;color:var(--text2);letter-spacing:2px;margin-top:8px;">64道题 · 5个维度 · 心理学框架 · AI分析</div>
+  </div>
+
+  <div class="welcome-features">
+    <div class="feature-card">
+      <div class="fc-icon">🧠</div>
+      <div class="fc-title">依恋匹配度</div>
+      <div class="fc-desc">测出你和ta的依恋类型组合</div>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">💬</div>
+      <div class="fc-title">沟通模式诊断</div>
+      <div class="fc-desc">你们吵架的方式决定能走多远</div>
+    </div>
+    <div class="feature-card">
+      <div class="fc-icon">🔮</div>
+      <div class="fc-title">未来走向预测</div>
+      <div class="fc-desc">基于心理学框架预测感情轨迹</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:20px;">
+    <button class="btn btn-primary" onclick="startQuiz()" style="padding:16px 48px;font-size:16px;font-weight:600;letter-spacing:2px;">开始测试</button>
+  </div>
+
+  <div style="text-align:center;margin-top:32px;font-size:12px;color:var(--text3);letter-spacing:1px;">
+    已有 12,847 人完成测试
+  </div>
+
+  <div class="card" style="margin-top:40px;">
+    <div class="card-title"><span class="dot" style="background:var(--pink)"></span>5个维度，全面透视你们的关系</div>
+    <div style="font-size:13px;color:var(--text2);line-height:2.2;">
+      <strong style="color:var(--text)">① 依恋类型（24题）</strong> — 测出你和ta的依恋类型，看你们的追逃模式<br>
+      <strong style="color:var(--text)">② 关系满意度（7题）</strong> — 你在这段关系里真的满意吗？<br>
+      <strong style="color:var(--text)">③ 爱的语言（15题）</strong> — 你们表达爱的方式匹配吗？<br>
+      <strong style="color:var(--text)">④ 沟通模式（8题）</strong> — 你们吵架的模式健康吗？<br>
+      <strong style="color:var(--text)">⑤ 危险信号（10题）</strong> — 这段关系有没有你看不见的红旗？
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <div class="card-title"><span class="dot" style="background:var(--purple)"></span>你会得到什么</div>
+    <div style="font-size:13px;color:var(--text2);line-height:2;">
+      双方依恋类型 + 关系满意度雷达图 + 爱语匹配度 + 沟通模式诊断 + 危险信号评估 + 斯滕伯格三角 + 关系阶段诊断 + 军师建议 + 行为预测 + 未来走向预测
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:11px;color:var(--text3);padding:24px 0;line-height:1.8;">
+    基于 ECR-S · RAS · Chapman五爱语 · Gottman四骑士 等心理学框架<br>
+    仅供自我探索参考，不构成专业心理评估
+  </div>
+</div>
+
+<!-- ═══ MODULE TRANSITION PAGE ═══ -->
+<div class="page" id="page-transition">
+  <div class="transition">
+    <div class="transition-icon" id="trans-icon">💭</div>
+    <div class="transition-title" id="trans-title">加载中...</div>
+    <div class="transition-sub" id="trans-sub"></div>
+    <button class="btn btn-primary" onclick="startCurrentModule()">开始</button>
+  </div>
+</div>
+
+<!-- ═══ QUESTION PAGE ═══ -->
+<div class="page" id="page-question">
+  <div class="progress-module" id="q-module"></div>
+  <div class="progress-text" id="q-progress"></div>
+  <div class="progress-bar"><div class="progress-fill" id="q-fill"></div></div>
+  <div class="question-wrap">
+    <div class="q-number" id="q-number"></div>
+    <div class="q-text" id="q-text"></div>
+    <div id="q-options"></div>
+  </div>
+</div>
+
+<!-- ═══ LOADING PAGE ═══ -->
+<div class="page" id="page-loading">
+  <div class="loading">
+    <div class="loading-spinner"></div>
+    <div id="loading-text" style="font-size:16px;color:var(--text);font-weight:300;letter-spacing:2px;">正在生成你的专属报告...</div>
+    <div style="font-size:12px;color:var(--text3);margin-top:8px;">分析5个维度数据中</div>
+  </div>
+</div>
+
+<!-- ═══ RESULTS PAGE ═══ -->
+<div class="page" id="page-results">
+  <div id="results-content"></div>
+  <div class="footer">
+    她不一样 · 关系深度分析测试<br>
+    基于 ECR-S · RAS · Chapman · Gottman 等心理学框架 · 仅供自我探索
+  </div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// QUESTION BANKS
+// ═══════════════════════════════════════════
+
+// --- Module 1: Attachment (ECR-S) ---
+const mod1_partA = [
+  {text:'工作被领导骂了，我第一个想跟ta吐槽',dim:'avo',rev:true},
+  {text:'ta半天没回消息，我就开始胡思乱想',dim:'anx'},
+  {text:'ta突然要来接我下班，我会觉得有点压力',dim:'avo'},
+  {text:'我总担心ta不够在乎我',dim:'anx'},
+  {text:'ta出差几天，我能安心过自己的生活',dim:'avo',rev:true},
+  {text:'周末ta说要跟朋友聚会，我会有点失落',dim:'anx'},
+  {text:'ta心情不好时，我不会太放在心上',dim:'avo'},
+  {text:'我总害怕ta哪天会突然提分手',dim:'anx'},
+  {text:'遇到困难时，我会主动跟ta商量',dim:'avo',rev:true},
+  {text:'ta突然要查我手机，我会很不舒服',dim:'avo'},
+  {text:'ta晚安说得稍微晚点，我就觉得是不是出问题了',dim:'anx'},
+  {text:'我完全信任ta不会做对不起我的事',dim:'avo',rev:true}
+];
+const mod1_partB = mod1_partA.map(q=>({
+  text:q.text.replace(/我/g,'ta').replace('向我','向我').replace('我的','ta的'),
+  dim:q.dim, rev:q.rev
+}));
+// Fix partner questions
+mod1_partB.forEach(q=>{
+  q.text=q.text
+    .replace('ta会向伴侣','ta会向你')
+    .replace('ta需要伴侣','ta需要你')
+    .replace('伴侣想和ta','你想和ta')
+    .replace('ta是爱ta','你是爱ta')
+    .replace('ta在乎ta','在乎ta')
+    .replace('ta依赖伴侣','ta依赖你')
+    .replace('伴侣不能时刻陪伴ta','你不能时刻陪伴ta')
+    .replace('ta不太在意伴侣','ta不太在意你')
+    .replace('ta担心伴侣离开ta','ta担心你离开ta')
+    .replace('ta愿意和伴侣','ta愿意和你')
+    .replace('ta靠得太近','ta靠得太近')
+    .replace('ta担心你不是真的爱ta','ta担心你不是真的爱ta')
+    .replace('ta对伴侣的信任','ta对你的信任');
+});
+
+// --- Module 2: Satisfaction (RAS) ---
+const mod2 = [
+  {text:'ta满足你各项需求的程度如何？',rev:false},
+  {text:'整体而言，你对你们的关系有多满意？',rev:false},
+  {text:'和大多数人相比，你觉得你们的关系如何？',rev:false},
+  {text:'你是否曾想过，如果没有这段关系会更好？',rev:true},
+  {text:'你们的关系符合你原先的期待吗？',rev:false},
+  {text:'你有多爱ta？',rev:false},
+  {text:'你们的关系中存在多少问题？',rev:true}
+];
+const mod2_labels = [
+  ['非常低','非常高'],['非常不满意','非常满意'],['非常不好','非常好'],
+  ['从没想过','经常想'],['非常不符合','非常符合'],['一点也不','非常爱'],['非常少','非常多']
+];
+
+// --- Module 3: Love Language ---
+const mod3 = [
+  {a:'我喜欢听到伴侣说"我爱你"',la:'words',b:'我喜欢伴侣给我一个拥抱',lb:'touch'},
+  {a:'伴侣帮我做家务让我感受到爱',la:'service',b:'伴侣送我小礼物让我感受到爱',lb:'gifts'},
+  {a:'我喜欢和伴侣一起出去约会',la:'time',b:'我喜欢伴侣写卡片或信给我',lb:'words'},
+  {a:'伴侣牵手或搂着我让我有安全感',la:'touch',b:'伴侣花时间陪我做我喜欢的事让我开心',lb:'time'},
+  {a:'我重视伴侣对我的肯定和赞美',la:'words',b:'我珍惜伴侣送给我的礼物',lb:'gifts'},
+  {a:'我喜欢伴侣在我需要时主动帮忙',la:'service',b:'我喜欢和伴侣安静地待在一起',lb:'time'},
+  {a:'收到伴侣的礼物让我很开心',la:'gifts',b:'听到伴侣的鼓励让我很有力量',lb:'words'},
+  {a:'伴侣为我做一顿饭让我感动',la:'service',b:'伴侣搂着我说"有我在"让我安心',lb:'touch'},
+  {a:'和伴侣一起旅行是我最美好的回忆',la:'time',b:'伴侣记得重要的纪念日并准备惊喜让我感动',lb:'gifts'},
+  {a:'我喜欢伴侣在公众场合表达对我的爱意',la:'words',b:'我喜欢伴侣在我难过时陪着我',lb:'time'},
+  {a:'伴侣帮我解决一个难题比送礼物更让我觉得被爱',la:'service',b:'伴侣的一个拥抱能治愈我一天的疲惫',lb:'touch'},
+  {a:'我喜欢伴侣不经意间送我小东西',la:'gifts',b:'我喜欢伴侣为我做一些力所能及的事',lb:'service'},
+  {a:'和伴侣深入交流让我觉得亲密',la:'time',b:'伴侣亲吻我的额头让我心跳加速',lb:'touch'},
+  {a:'伴侣说"你辛苦了"比什么都暖心',la:'words',b:'伴侣把家里收拾好等我回来让我感动',lb:'service'},
+  {a:'我更在意伴侣花了多少心思在礼物上',la:'gifts',b:'我更在意伴侣花了多少时间陪我',lb:'time'}
+];
+
+// --- Module 4: Communication (Gottman) ---
+const mod4 = [
+  {text:'你们发生争执时，你更可能怎样？',
+   opts:[
+     {text:'先听ta说完，再表达自己的感受',type:'healthy'},
+     {text:'"你也一样啊，上次你不也……"',type:'criticism'},
+     {text:'"就你这样还有资格说我？"',type:'contempt'},
+     {text:'"我那样做是有原因的，你先听我说……"',type:'defensiveness'},
+     {text:'不想说话了，沉默或者走开',type:'stonewalling'}
+   ]},
+  {text:'当你对伴侣不满时，你通常：',
+   opts:[
+     {text:'找合适的时机，平静地告诉ta我的感受',type:'healthy'},
+     {text:'忍不住说ta"你怎么总是这样"',type:'criticism'},
+     {text:'阴阳怪气——"哇，你今天可真体贴呢"',type:'contempt'},
+     {text:'马上解释自己的做法——"我不是那个意思"',type:'defensiveness'},
+     {text:'把不满憋在心里，不想说',type:'stonewalling'}
+   ]},
+  {text:'伴侣抱怨你某件事没做好时，你的第一反应是：',
+   opts:[
+     {text:'认真听，如果确实是我的问题就承认',type:'healthy'},
+     {text:'忍不住翻旧账——"你上次不也……"',type:'criticism'},
+     {text:'觉得小题大做——"就这点事值得说？"',type:'contempt'},
+     {text:'第一反应是找原因——"那是因为你没跟我说清楚"',type:'defensiveness'},
+     {text:'嘴上嗯一声，心里不想理',type:'stonewalling'}
+   ]},
+  {text:'当气氛变得紧张时，你会：',
+   opts:[
+     {text:'试着让双方都冷静下来，然后再聊',type:'healthy'},
+     {text:'越说越激动，开始翻旧账',type:'criticism'},
+     {text:'忍不住翻白眼或冷笑',type:'contempt'},
+     {text:'赶紧解释自己——"其实是因为……"',type:'defensiveness'},
+     {text:'拿起手机刷视频，不想面对',type:'stonewalling'}
+   ]},
+  {text:'伴侣说"你不在乎我了"，你会怎么回应：',
+   opts:[
+     {text:'认真对待ta的感受，问ta最近是不是有什么事',type:'healthy'},
+     {text:'"你想太多了，一天到晚瞎琢磨"',type:'criticism'},
+     {text:'"我每天忙得要死，哪有空想这些"',type:'contempt'},
+     {text:'"我上周还陪你……你怎么能这样说"',type:'defensiveness'},
+     {text:'不知道说什么，就沉默了',type:'stonewalling'}
+   ]},
+  {text:'你们吵架后的状态通常是：',
+   opts:[
+     {text:'冷静下来后会主动找对方聊，把问题说开',type:'healthy'},
+     {text:'越想越气，觉得都是对方的错',type:'criticism'},
+     {text:'故意不回消息，想让ta也不好受',type:'contempt'},
+     {text:'觉得自己也有道理，等对方先道歉',type:'defensiveness'},
+     {text:'一个人闷着，什么都不想说',type:'stonewalling'}
+   ]},
+  {text:'当你觉得委屈时，你会：',
+   opts:[
+     {text:'直接告诉ta"我有点难过"，让对方知道',type:'healthy'},
+     {text:'忍不住指责ta——"你从来不考虑我的感受"',type:'criticism'},
+     {text:'在朋友圈发点暗示性的内容',type:'contempt'},
+     {text:'不停解释自己为什么委屈，证明自己没错',type:'defensiveness'},
+     {text:'什么也不说，一个人憋着',type:'stonewalling'}
+   ]},
+  {text:'对方想和你谈一个敏感话题时，你：',
+   opts:[
+     {text:'虽然不太舒服，但还是愿意听ta说完',type:'healthy'},
+     {text:'反击——"你自己做得也不怎么样吧"',type:'criticism'},
+     {text:'敷衍——"行行行，你都对"',type:'contempt'},
+     {text:'没等ta说完就急着解释自己的立场',type:'defensiveness'},
+     {text:'说"不想谈"，然后找借口避开',type:'stonewalling'}
+   ]}
+];
+
+// --- Module 5: Red Flags ---
+const mod5 = [
+  {text:'ta会突然对你很热情，然后又突然冷淡'},
+  {text:'ta会查看你的手机、社交账号或行踪'},
+  {text:'ta经常说"你要是离开我我就……"'},
+  {text:'你不敢跟ta提某些话题，怕ta生气'},
+  {text:'ta在朋友面前和独处时判若两人'},
+  {text:'你经常觉得自己不够好，配不上ta'},
+  {text:'ta说过"除了我没人会要你"之类的话'},
+  {text:'你们的关系时好时坏，但你始终无法离开'},
+  {text:'ta消失一段时间后突然出现，像什么都没发生'},
+  {text:'你在这段关系中变得更焦虑、更不自信了'}
+];
+
+// ═══════════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════════
+const answers = {partA:[],partB:[],satisfaction:[],loveLang:[],gottman:[],redflags:[]};
+let currentModule = 0;
+let currentQ = 0;
+
+const moduleMeta = [
+  {id:'attachment',name:'依恋类型',icon:'💭',sub:'第一部分：测你的依恋类型（12题）\n基于 ECR-S 量表，测量你的焦虑维度和回避维度'},
+  {id:'attachmentB',name:'ta的依恋类型',icon:'🔍',sub:'第二部分：推测ta的依恋类型（12题）\n根据你观察到的ta的行为，ta最可能是哪种类型？'},
+  {id:'satisfaction',name:'关系满意度',icon:'📊',sub:'第三部分：关系满意度（7题）\n基于 RAS 量表，测你对这段关系的整体满意度'},
+  {id:'loveLang',name:'爱的语言',icon:'💝',sub:'第四部分：爱的语言（15题）\n基于 Chapman 五爱语理论，测你的爱语是什么'},
+  {id:'gottman',name:'沟通模式',icon:'🗣️',sub:'第五部分：沟通模式（8题）\n基于 Gottman 四骑士理论，测你们的沟通健康度'},
+  {id:'redflags',name:'危险信号',icon:'🚩',sub:'最后一部分：危险信号（10题）\n识别你可能忽略的关系红旗'}
+];
+
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+
+function startQuiz(){currentModule=0;showTransition(0)}
+
+function showTransition(mod){
+  const m=moduleMeta[mod];
+  document.getElementById('trans-icon').textContent=m.icon;
+  document.getElementById('trans-title').textContent=m.name;
+  document.getElementById('trans-sub').innerHTML=m.sub.replace(/\n/g,'<br>');
+  showPage('page-transition');
+  currentModule=mod;
+}
+
+function startCurrentModule(){
+  currentQ=0;
+  showPage('page-question');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const mod=currentModule;
+  let totalQ, questions;
+  if(mod===0){questions=mod1_partA;totalQ=12;}
+  else if(mod===1){questions=mod1_partB;totalQ=12;}
+  else if(mod===2){questions=mod2;totalQ=7;}
+  else if(mod===3){questions=mod3;totalQ=15;}
+  else if(mod===4){questions=mod4;totalQ=8;}
+  else{questions=mod5;totalQ=10;}
+
+  const q=questions[currentQ];
+  const modName=moduleMeta[mod].name;
+  document.getElementById('q-module').textContent=modName;
+  document.getElementById('q-progress').textContent=`第 ${currentQ+1}/${totalQ} 题`;
+  document.getElementById('q-fill').style.width=((currentQ)/totalQ*100)+'%';
+  document.getElementById('q-number').textContent=`Q${currentQ+1}`;
+  document.getElementById('q-text').textContent=q.text;
+
+  const optDiv=document.getElementById('q-options');
+  optDiv.innerHTML='';
+
+  if(mod<=1||mod===2){
+    // Likert scale
+    const max=mod<=1?7:5;
+    const labels=mod===2?mod2_labels[currentQ]:null;
+    let scaleHTML='<div class="q-scale likert-options">';
+    for(let i=1;i<=max;i++){
+      scaleHTML+=`<div class="q-scale-num opt" data-val="${i}" onclick="pickLikert(${i},${max})">${i}</div>`;
+    }
+    scaleHTML+='</div><div class="q-scale-labels">';
+    if(labels){scaleHTML+=`<span>${labels[0]}</span><span>${labels[1]}</span>`}
+    else{scaleHTML+=`<span>${mod<=1?'完全不同意':'非常低'}</span><span>${mod<=1?'完全同意':'非常高'}</span>`}
+    scaleHTML+='</div>';
+    optDiv.innerHTML=scaleHTML;
+  } else if(mod===3){
+    // Pair choice
+    optDiv.innerHTML=`<div class="q-pair">
+      <div class="q-pair-opt" data-val="a" onclick="pickPair('a')">${q.a}</div>
+      <div style="text-align:center;font-size:11px;color:var(--text3);padding:4px;">或</div>
+      <div class="q-pair-opt" data-val="b" onclick="pickPair('b')">${q.b}</div>
+    </div>`;
+  } else if(mod===4){
+    // Scenario
+    let html='<div class="q-scenario">';
+    q.opts.forEach((o,i)=>{
+      html+=`<div class="q-scenario-opt" data-idx="${i}" onclick="pickScenario(${i})">${o.text}</div>`;
+    });
+    html+='</div>';
+    optDiv.innerHTML=html;
+  } else {
+    // Three choice
+    optDiv.innerHTML=`<div class="q-three">
+      <div class="q-three-opt" data-val="2" onclick="pickThree(2)">经常</div>
+      <div class="q-three-opt" data-val="1" onclick="pickThree(1)">偶尔</div>
+      <div class="q-three-opt" data-val="0" onclick="pickThree(0)">从不</div>
+    </div>`;
+  }
+}
+
+function pickLikert(val){
+  document.querySelectorAll('.q-scale-num').forEach(e=>e.classList.remove('selected'));
+  document.querySelector(`.q-scale-num[data-val="${val}"]`).classList.add('selected');
+  setTimeout(()=>nextQ(val),350);
+}
+function pickPair(val){
+  document.querySelectorAll('.q-pair-opt').forEach(e=>e.classList.remove('selected'));
+  document.querySelector(`.q-pair-opt[data-val="${val}"]`).classList.add('selected');
+  setTimeout(()=>nextQ(val),350);
+}
+function pickScenario(idx){
+  document.querySelectorAll('.q-scenario-opt').forEach(e=>e.classList.remove('selected'));
+  document.querySelector(`.q-scenario-opt[data-idx="${idx}"]`).classList.add('selected');
+  setTimeout(()=>nextQ(idx),350);
+}
+function pickThree(val){
+  document.querySelectorAll('.q-three-opt').forEach(e=>e.classList.remove('selected'));
+  document.querySelector(`.q-three-opt[data-val="${val}"]`).classList.add('selected');
+  setTimeout(()=>nextQ(val),350);
+}
+
+function nextQ(val){
+  const mod=currentModule;
+  // Store answer
+  if(mod===0) answers.partA.push(val);
+  else if(mod===1) answers.partB.push(val);
+  else if(mod===2) answers.satisfaction.push(val);
+  else if(mod===3) answers.loveLang.push(val);
+  else if(mod===4) answers.gottman.push(val);
+  else answers.redflags.push(val);
+
+  currentQ++;
+  let totalQ;
+  if(mod<=1) totalQ=12;
+  else if(mod===2) totalQ=7;
+  else if(mod===3) totalQ=15;
+  else if(mod===4) totalQ=8;
+  else totalQ=10;
+
+  if(currentQ>=totalQ){
+    // Module done
+    if(mod<5){
+      showTransition(mod+1);
+    } else {
+      showPage('page-loading');
+      var __retryCount=0;
+      function __tryGenerate(){
+        try{
+          generateReport();
+          var resultsEl=document.getElementById('results-content');
+          if(!resultsEl||!resultsEl.innerHTML||resultsEl.innerHTML.length<100){
+            throw new Error('报告内容为空');
+          }
+        }catch(e){
+          __retryCount++;
+          if(__retryCount<=2){
+            setTimeout(__tryGenerate,1000);
+          }else{
+            document.getElementById('page-loading').innerHTML=
+              '<div class="loading" style="text-align:center;padding:40px 20px;">'+
+              '<div style="font-size:18px;color:#e74c3c;margin-bottom:12px;">报告生成出错</div>'+
+              '<div style="font-size:13px;color:var(--text2);line-height:1.8;word-break:break-all;">'+e.message+'</div>'+
+              '<button class="btn btn-primary" style="margin-top:20px;" onclick="location.reload()">重新开始</button>'+
+              '</div>';
+          }
+        }
+      }
+      setTimeout(__tryGenerate,800);
+    }
+  } else {
+    renderQuestion();
+  }
+}
+
+// ═══════════════════════════════════════════
+// SCORING
+// ═══════════════════════════════════════════
+function scoreAttachment(ans,questions){
+  let anxS=0,anxC=0,avoS=0,avoC=0;
+  const len=Math.min(ans.length,questions.length);
+  for(let i=0;i<len;i++){
+    let v=ans[i];
+    if(v===undefined) continue;
+    if(questions[i].rev) v=8-v;
+    if(questions[i].dim==='anx'){anxS+=v;anxC++}
+    else{avoS+=v;avoC++}
+  }
+  return{anxiety:anxC?anxS/anxC:0,avoidance:avoC?avoS/avoC:0};
+}
+function classifyAttachment(s){
+  const ANX=3.62,AVO=2.71;
+  if(s.anxiety<ANX&&s.avoidance<AVO) return'secure';
+  if(s.anxiety>=ANX&&s.avoidance<AVO) return'anxious';
+  if(s.anxiety<ANX&&s.avoidance>=AVO) return'dismissive';
+  return'fearful';
+}
+
+function scoreSatisfaction(){
+  let sum=0;
+  for(let i=0;i<7;i++){
+    let v=answers.satisfaction[i];
+    if(v===undefined) continue;
+    if(mod2[i].rev) v=6-v;
+    sum+=v;
+  }
+  return sum/7||0;
+}
+
+function scoreLoveLang(){
+  const counts={words:0,time:0,gifts:0,service:0,touch:0};
+  answers.loveLang.forEach((a,i)=>{
+    if(i>=mod3.length) return;
+    if(a==='a') counts[mod3[i].la]++;
+    else counts[mod3[i].lb]++;
+  });
+  return counts;
+}
+
+function scoreGottman(){
+  const counts={criticism:0,contempt:0,defensiveness:0,stonewalling:0};
+  let healthyCount=0;
+  answers.gottman.forEach((idx,i)=>{
+    if(i>=mod4.length||!mod4[i]||!mod4[i].opts[idx]) return;
+    const type=mod4[i].opts[idx].type;
+    if(type==='healthy') healthyCount++;
+    else counts[type]++;
+  });
+  counts.healthy=healthyCount;
+  return counts;
+}
+
+function scoreRedflags(){
+  return answers.redflags.reduce((s,v)=>s+v,0);
+}
+
+// ═══════════════════════════════════════════
+// REPORT TEXT DATA
+// ═══════════════════════════════════════════
+const typeInfo={
+  secure:{name:'安全型',color:'var(--green)',tag:'tag-green',emoji:'🌿',
+    desc:'你在亲密关系中感到安全和自在。你信任伴侣，不担心被抛弃，也不害怕亲密。你能够健康地表达需求和感受。'},
+  anxious:{name:'焦虑型',color:'var(--blue)',tag:'tag-blue',emoji:'🌊',
+    desc:'你渴望亲密但总是担心被抛弃。你需要伴侣反复确认爱意，对关系中的不确定性高度敏感。你的情绪起伏较大，容易过度解读对方的行为。'},
+  dismissive:{name:'疏离型回避',color:'var(--orange)',tag:'tag-orange',emoji:'🏔️',
+    desc:'你倾向于保持情感距离，觉得不需要依赖他人。你在关系中显得冷淡和独立，面对亲密时会本能地拉开距离。'},
+  fearful:{name:'恐惧型回避',color:'var(--pink)',tag:'tag-pink',emoji:'🦋',
+    desc:'你既渴望亲密又害怕亲密。你想被爱，但当真的被爱时会恐慌。你可以靠近到一定程度，然后本能地推开——推了又回来，回来了又推。'}
+};
+
+const dynamicsMap={
+  'secure-secure':{name:'双安模式',color:'var(--green)',pattern:'两个安全型在一起——你们能够坦诚沟通、互相支持、保持健康的独立性。这是最稳定的关系模式。',
+    why:'你们都被对方的稳定和温暖吸引。'},
+  'secure-anxious':{name:'护航模式',color:'var(--blue)',pattern:'安全型 + 焦虑型 = 你的稳定能给ta安全感，但ta的过度需求可能让你疲惫。',
+    why:'你被ta的热情和需要感吸引，ta被你的稳定和可靠吸引。'},
+  'secure-dismissive':{name:'追逃模式（温和版）',color:'var(--orange)',pattern:'安全型 + 疏离型 = 你想要更多亲密，ta觉得已经够了。你的稳定可能慢慢软化ta，但也可能让你感到被拒绝。',
+    why:'你被ta的独立和自足吸引，觉得"不需要我也能活"很酷。'},
+  'secure-fearful':{name:'追逃模式（激烈版）',color:'var(--pink)',pattern:'安全型 + 恐惧型 = 你越稳定ta越恐慌——因为ta的整个防御系统是基于"所有人都会离开"设计的。你不走，ta不知道怎么办。',
+    why:'你被ta间歇性的柔软深深吸引——每一次ta靠近你都觉得自己是特别的。'},
+  'anxious-anxious':{name:'互追模式',color:'var(--purple)',pattern:'两个焦虑型在一起 = 情绪风暴。你们都在拼命确认对方的爱，但对方的焦虑又会触发你的不安。',
+    why:'你们都太渴望被爱了，对方的热情让你觉得"终于有人跟我一样"。'},
+  'anxious-dismissive':{name:'经典追逃模式',color:'var(--yellow)',pattern:'焦虑型 + 疏离型 = 关系研究中最经典的痛苦组合。你越追ta越跑，ta越跑你越追。',
+    why:'你被ta的独立和冷静吸引——那是你缺失的。ta被你的热情和关注吸引——那是ta假装不需要的。'},
+  'anxious-fearful':{name:'追逃模式（升级版）',color:'var(--red)',pattern:'焦虑型 + 恐惧型 = 你越追ta越恐慌，ta的恐慌又让你更焦虑。恐惧型不仅逃跑，还会反复拉你靠近又推开。',
+    why:'你被ta的脆弱和间歇性的温暖深深吸引。每一次ta回来你都觉得自己被需要。'},
+  'dismissive-dismissive':{name:'互逃模式',color:'var(--text3)',pattern:'两个疏离型在一起 = 客气但疏远。你们都不太需要对方，关系可能长期处于低温度状态。',
+    why:'你们都觉得"不粘人"是优点，互相欣赏对方的独立。'},
+  'dismissive-fearful':{name:'逃逃模式',color:'var(--orange)',pattern:'疏离型 + 恐惧型 = ta想靠近时你嫌多，你想安静时ta又觉得被拒绝。两个人都在逃，但逃的方向不同。',
+    why:'你被ta偶尔展现的脆弱打动，ta被你的稳定和不需要承诺吸引。'},
+  'fearful-fearful':{name:'双恐模式',color:'var(--pink)',pattern:'两个恐惧型在一起 = 最混乱的组合。互相试探、互相推开、互相回来，像两只受惊的刺猬。',
+    why:'你理解ta的恐惧，ta理解你的矛盾——但这种理解可能让你们一起陷入循环。'}
+};
+
+const langNames={words:'肯定的话语',time:'精心时刻',gifts:'接受礼物',service:'服务的行动',touch:'身体接触'};
+const langIcons={words:'💬',time:'⏰',gifts:'🎁',service:'🛠️',touch:'🤗'};
+const langDescs={words:'你最需要听到ta说"我爱你""你辛苦了""我为你骄傲"——肯定的言语是你感受爱的主要方式。',
+  time:'你最需要ta全心全意的陪伴——不看手机、不心不在焉，就是和你在一起。',
+  gifts:'你最被用心的礼物打动——不是贵不贵的问题，是ta记不记得、有没有花心思。',
+  service:'ta为你做的事比说的话更有力量——做一顿饭、修一个东西、帮你分担压力。',
+  touch:'拥抱、牵手、亲吻——身体接触是你感受安全感和亲密感的主要方式。'};
+
+// ═══════════════════════════════════════════
+// FUTURE PREDICTION ALGORITHM
+// ═══════════════════════════════════════════
+function predictFuture(myType, partnerType, satisfaction, riskScore, gottman, loveLangCounts){
+  let paths = { A: 25, B: 25, C: 25, D: 25 };
+
+  // Attachment combination modifier
+  if (myType === 'secure' && partnerType === 'secure') {
+    paths.A += 20; paths.B += 10; paths.D -= 15; paths.C -= 15;
+  }
+  if ((myType === 'anxious' && (partnerType === 'dismissive' || partnerType === 'fearful')) ||
+      (partnerType === 'anxious' && (myType === 'dismissive' || myType === 'fearful'))) {
+    paths.C += 25; paths.D += 10; paths.A -= 20; paths.B -= 15;
+  }
+  if (myType === 'anxious' && partnerType === 'anxious') {
+    paths.B += 15; paths.C += 10; paths.A -= 10;
+  }
+
+  // Satisfaction modifier
+  if (satisfaction > 3.5) { paths.A += 15; paths.B += 5; paths.D -= 10; }
+  if (satisfaction < 2.5) { paths.D += 15; paths.C += 10; paths.A -= 15; }
+
+  // Red flags modifier
+  if (riskScore > 15) { paths.D += 20; paths.C += 10; paths.A -= 20; paths.B -= 10; }
+  else if (riskScore > 10) { paths.D += 10; paths.C += 10; paths.A -= 10; }
+  else if (riskScore < 5) { paths.A += 10; paths.B += 5; }
+
+  // Gottman four horsemen
+  if (gottman.stonewalling > 2 || gottman.criticism > 2) { paths.C += 10; paths.D += 5; }
+  if (gottman.healthy > 3) { paths.A += 10; paths.B += 5; }
+
+  // Love language match (top 2 overlap)
+  const langTop2 = Object.entries(loveLangCounts).sort((a,b)=>b[1]-a[1]).slice(0,2).map(e=>e[0]);
+  // We consider it a "match" if the user has clear preferences (top 2 scores are meaningfully high)
+  const loveLangMatch = langTop2.reduce((s,e)=>s+loveLangCounts[e],0) >= 8;
+  if (loveLangMatch) { paths.A += 10; paths.B += 5; }
+
+  // Clamp negatives
+  paths.A = Math.max(paths.A, 1);
+  paths.B = Math.max(paths.B, 1);
+  paths.C = Math.max(paths.C, 1);
+  paths.D = Math.max(paths.D, 1);
+
+  // Normalize to 100%
+  const total = paths.A + paths.B + paths.C + paths.D;
+  paths.A = Math.round(paths.A / total * 100);
+  paths.B = Math.round(paths.B / total * 100);
+  paths.C = Math.round(paths.C / total * 100);
+  paths.D = 100 - paths.A - paths.B - paths.C;
+
+  return paths;
+}
+
+// ═══════════════════════════════════════════
+// REPORT GENERATOR
+// ═══════════════════════════════════════════
+function generateReport(){
+  // Score everything
+  const myScore=scoreAttachment(answers.partA,mod1_partA);
+  const myType=classifyAttachment(myScore);
+  const paScore=scoreAttachment(answers.partB,mod1_partB);
+  const paType=classifyAttachment(paScore);
+  const satScore=scoreSatisfaction();
+  const langCounts=scoreLoveLang();
+  const gottmanCounts=scoreGottman();
+  const riskScore=scoreRedflags();
+
+  // Derived metrics
+  const satLevel=satScore>4.0?'high':satScore>2.5?'mid':'low';
+  const riskLevel=riskScore>=16?'high':riskScore>=9?'mid':'low';
+  const langTop=Object.entries(langCounts).sort((a,b)=>b[1]-a[1]);
+  const gottmanTotal=Object.values(gottmanCounts).reduce((a,b)=>a+b,0);
+  const gottmanDom=Object.entries(gottmanCounts).filter(([k])=>k!=='healthy').sort((a,b)=>b[1]-a[1])[0];
+  const gottmanHealthyCount=gottmanCounts.healthy||0;
+  const gottmanNames={criticism:'批评',contempt:'蔑视',defensiveness:'辩护',stonewalling:'筑墙/冷战'};
+
+  // Sternberg estimate (derived)
+  const passion=Math.round(Math.min(100,Math.max(10,(satScore/5)*60+(myType==='anxious'||myType==='fearful'?20:10))));
+  const intimacy=Math.round(Math.min(100,Math.max(10,(satScore/5)*70+((5-riskScore)/20)*20)));
+  const commitment=Math.round(Math.min(100,Math.max(10,(satScore/5)*65+(myType==='secure'?20:0))));
+
+  // Situational anxiety detection
+  const isSituational=(myType==='anxious'||myType==='fearful')&&satScore>3.0&&riskLevel!=='low';
+
+  // Relationship stage
+  let stage, stageDesc;
+  if(satScore>4.0&&riskLevel==='low'){stage='稳定期';stageDesc='你们的关系处于健康状态，满意度高，危险信号少。';}
+  else if(satScore>3.0&&riskLevel==='low'){stage='磨合期';stageDesc='你们在适应彼此的差异，有摩擦但在可控范围内。';}
+  else if(riskLevel==='high'){stage='危险期';stageDesc='你们的关系中存在明显的危险信号，需要认真审视。';}
+  else if(satScore<2.5){stage='降温期';stageDesc='你对这段关系的满意度很低，可能已经在考虑是否值得继续。';}
+  else{stage='波动期';stageDesc='你们的关系时好时坏，不太稳定，需要注意。';}
+
+  // Dynamic key
+  const dk=myType+'-'+paType;
+  const dyn=dynamicsMap[dk]||dynamicsMap['secure-anxious'];
+  const my=typeInfo[myType];
+  const pa=typeInfo[paType];
+
+  // Build report HTML
+  let h='';
+
+  // ---- Hero ----
+  h+=`<div class="hero">
+    <div class="hero-label">Relationship Analysis Report</div>
+    <div class="hero-name">她不一样</div>
+    <div class="hero-sub">基于你的回答生成的专属分析报告<br>5个维度 · 全面透视</div>
+    <div class="hero-line"></div>
+    <div style="margin-top:12px;">
+      <span class="tag ${my.tag}">你：${my.name}</span>
+      <span class="tag ${pa.tag}">ta：${pa.name}</span>
+      <span class="tag tag-purple">${stage}</span>
+    </div>
+  </div>`;
+
+  // ---- Section 1: Attachment ----
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div class="section-title">依恋类型分析</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:${my.color}"></span>你的依恋类型</div>
+      <div style="margin-bottom:12px;"><span class="type-badge" style="background:${my.color}22;color:${my.color}">${my.emoji} ${my.name}</span></div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">${my.desc}</div>
+      <div class="highlight-box">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;">维度得分</div>
+        <div class="prob-bar"><span class="prob-label">焦虑维度</span><div class="prob-track"><div class="prob-fill" style="width:${myScore.anxiety/7*100}%;background:linear-gradient(90deg,var(--blue),var(--pink))"></div></div><span class="prob-value" style="color:var(--blue)">${myScore.anxiety.toFixed(2)}</span></div>
+        <div class="prob-bar"><span class="prob-label">回避维度</span><div class="prob-track"><div class="prob-fill" style="width:${myScore.avoidance/7*100}%;background:linear-gradient(90deg,var(--orange),var(--yellow))"></div></div><span class="prob-value" style="color:var(--orange)">${myScore.avoidance.toFixed(2)}</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:${pa.color}"></span>ta的依恋类型（推测）</div>
+      <div style="margin-bottom:12px;"><span class="type-badge" style="background:${pa.color}22;color:${pa.color}">${pa.emoji} ${pa.name}</span></div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">${pa.desc}</div>
+    </div>
+    <div class="highlight-box">
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:8px;">🔄 你们的关系动态：${dyn.name}</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">${dyn.pattern}</div>
+    </div>
+  </div>`;
+
+  // ---- Section 2: Satisfaction ----
+  const satLabel=satLevel==='high'?'满意':satLevel==='mid'?'一般':'不满意';
+  const satColor=satLevel==='high'?'var(--green)':satLevel==='mid'?'var(--yellow)':'var(--red)';
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div class="section-title">关系满意度</div>
+    </div>
+    <div class="card">
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:48px;font-weight:700;color:${satColor}">${satScore.toFixed(1)}</div>
+        <div style="font-size:14px;color:var(--text2);margin-top:4px;">满分 5.0 · ${satLabel}</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:8px;">基于 RAS 关系满意度量表</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--purple)"></span>满意度维度分析</div>
+      <div id="sat-chart" class="chart-wrap"><canvas id="satCanvas"></canvas></div>
+    </div>
+  </div>`;
+
+  // ---- Section 3: Love Language ----
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div class="section-title">爱的语言</div>
+    </div>
+    <div class="lang-grid">`;
+  langTop.forEach(([k,v],i)=>{
+    const isTop=i===0;
+    h+=`<div class="lang-card ${isTop?'top':''}">
+      <div class="lang-icon">${langIcons[k]}</div>
+      <div class="lang-name">${langNames[k]}</div>
+      <div class="lang-score" style="color:${isTop?'var(--pink)':'var(--text2)'}">${v}</div>
+      <div class="lang-desc">${langDescs[k]}</div>
+    </div>`;
+  });
+  h+=`</div>
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title"><span class="dot" style="background:var(--pink)"></span>你的核心爱语</div>
+      <div style="font-size:14px;color:var(--text);margin-bottom:8px;">${langIcons[langTop[0][0]]} ${langNames[langTop[0][0]]}（${langTop[0][1]}次选择）</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8;">${langDescs[langTop[0][0]]}</div>
+    </div>
+  </div>`;
+
+  // ---- Section 4: Communication ----
+  const gottColors={criticism:'var(--orange)',contempt:'var(--red)',defensiveness:'var(--yellow)',stonewalling:'var(--blue)'};
+  const gottmanBase=8;
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div class="section-title">沟通模式诊断</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--green)"></span>沟通健康度</div>
+      <div style="text-align:center;padding:12px 0 16px;">
+        <div style="font-size:42px;font-weight:700;color:var(--green)">${gottmanHealthyCount}<span style="font-size:18px;color:var(--text3)"> / ${gottmanBase} 次健康回应</span></div>
+      </div>`;
+  const horsemenEntries=Object.entries(gottmanCounts).filter(([k,v])=>k!=='healthy'&&v>0);
+  if(horsemenEntries.length>0){
+    h+=`<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:12px;">
+      <div style="font-size:13px;color:var(--text3);margin-bottom:8px;">出现的消极模式</div>`;
+    horsemenEntries.forEach(([k,v])=>{
+      const pct=Math.round(v/gottmanBase*100);
+      h+=`<div class="prob-bar"><span class="prob-label">${gottmanNames[k]}</span><div class="prob-track"><div class="prob-fill" style="width:${pct}%;background:${gottColors[k]}"></div></div><span class="prob-value" style="color:${gottColors[k]}">${v}次</span></div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+  if(gottmanHealthyCount>=6){
+    h+=`<div class="green-box">
+      <div style="font-size:14px;font-weight:600;color:var(--green);margin-bottom:8px;">沟通状态良好</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">你在大部分冲突场景中都能保持健康的沟通方式——先听再表达、就事论事、不回避也不攻击。这是非常难得的。继续维持这个习惯，它是关系稳定的重要基石。</div>
+    </div>`;
+  } else if(gottmanHealthyCount>=4){
+    h+=`<div class="highlight-box">
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:8px;">沟通有基础，但仍有提升空间</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">你在相当一部分场景中能保持冷静和理性，但在某些触发点上容易滑入消极模式。注意观察你最容易出现的模式——${gottmanNames[gottmanDom[0]]}，在下次冲突前给自己3秒钟缓冲。</div>
+    </div>`;
+  } else if(gottmanDom[1]>=3){
+    h+=`<div class="warning-box">
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:8px;">主导模式：${gottmanNames[gottmanDom[0]]}</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">${
+        gottmanDom[0]==='stonewalling'?'你们最常用的冲突应对方式是逃避和沉默——一个人追着要谈，另一个人封闭自己。长期的冷战会让关系中的问题越积越多，最终爆发出不可挽回的后果。':
+        gottmanDom[0]==='criticism'?'你们倾向于指责对方而不是表达自己的需求——"你怎么总是这样"比"我希望你能..."更容易说出口。批评不会让对方改变，只会让对方防备。':
+        gottmanDom[0]==='contempt'?'蔑视是关系杀手中的杀手——讽刺、阴阳怪气传达的不是不满，而是优越感。Gottman研究发现，蔑视是离婚最准确的预测指标。':
+        '你们在冲突中的第一反应是为自己辩护——"不是我""是因为你……"。辩护的问题在于它把沟通变成了互相推卸责任，问题永远得不到解决。'
+      }</div>
+    </div>`;
+  } else {
+    h+=`<div class="highlight-box">
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:8px;">消极模式较分散</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">你的消极沟通模式没有集中在某一类，而是分布在几种不同的方式中。这意味着你在不同场景下有不同的应激反应。可以试着在冲突时先停顿几秒，选择更健康的回应方式。</div>
+    </div>`;
+  }
+  h+=`</div>`;
+
+  // ---- Section 5: Red Flags ----
+  const riskLabel=riskLevel==='high'?'高危':riskLevel==='mid'?'中危':'低危';
+  const riskColor=riskLevel==='high'?'var(--red)':riskLevel==='mid'?'var(--orange)':'var(--green)';
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div class="section-title">危险信号评估</div>
+    </div>
+    <div class="card">
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:14px;color:var(--text3);margin-bottom:8px;">危险信号评分</div>
+        <div style="font-size:48px;font-weight:700;color:${riskColor}">${riskScore}<span style="font-size:20px;color:var(--text3)"> / 20</span></div>
+        <span class="type-badge" style="background:${riskColor}22;color:${riskColor}">${riskLabel}</span>
+      </div>
+    </div>`;
+  const flagLabels=mod5.map(q=>q.text);
+  const triggeredFlags=answers.redflags.slice(0,mod5.length).map((v,i)=>(v>=1&&flagLabels[i])?{text:flagLabels[i],level:v}:null).filter(Boolean);
+  if(triggeredFlags.length>0){
+    h+=`<div class="${riskLevel==='high'?'warning':'highlight'}-box">
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:12px;">触发的信号</div>`;
+    triggeredFlags.forEach(f=>{
+      h+=`<div style="font-size:13px;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);">
+        <span style="color:${f.level===2?'var(--red)':'var(--orange)'}">●</span> ${f.text} <span style="color:var(--text3);font-size:11px;">（${f.level===2?'经常':'偶尔'}）</span>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+  h+=`</div>`;
+
+  // ---- Section 6: Sternberg Triangle ----
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <div class="section-title">斯滕伯格三角</div>
+    </div>
+    <div class="card">
+      <div id="stern-chart" class="chart-wrap"><canvas id="sternCanvas"></canvas></div>
+      <div style="text-align:center;font-size:13px;color:var(--text2);margin-top:8px;">
+        激情 ${passion}% · 亲密 ${intimacy}% · 承诺 ${commitment}%
+      </div>
+    </div>
+    <div class="highlight-box">
+      <div style="font-size:13px;color:var(--text2);line-height:2;">${
+        passion>60&&intimacy>60&&commitment>60?'你们的爱情三角比较完整——同时拥有激情、亲密和承诺，这是最理想的"完美之爱"。':
+        passion>60&&intimacy>60?'你们有激情和亲密，但承诺不足——这叫"浪漫之爱"。甜蜜但不稳定，需要建立更多安全感。':
+        intimacy>60&&commitment>60?'你们有亲密和承诺，但激情不足——这叫"伴侣之爱"。像老朋友一样温暖，但可能缺乏心动。':
+        passion>60&&commitment>60?'你们有激情和承诺，但亲密不足——这叫"愚蠢之爱"。闪电式的关系，需要更多了解彼此。':
+        '你们的三角存在明显短板——至少有两个维度偏低。这不意味着不爱，而是需要识别具体缺少了什么并补上。'
+      }</div>
+    </div>
+  </div>`;
+
+  // ---- Section 7: Relationship Stage ----
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <div class="section-title">关系阶段诊断</div>
+    </div>
+    <div class="card">
+      <div style="text-align:center;padding:16px 0;">
+        <span class="type-badge" style="background:var(--purple)22;color:var(--purple);font-size:16px;padding:8px 20px;">📍 ${stage}</span>
+        <div style="font-size:13px;color:var(--text2);margin-top:12px;line-height:2;">${stageDesc}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // ---- Section 8: Strategist ----
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">08</div>
+      <div class="section-title">军师建议</div>
+    </div>`;
+
+  // Stop doing
+  const stopList = [];
+  if(myType==='anxious'||myType==='fearful') stopList.push({action:'停止过度解读对方的行为',reason:'不是每一条消息的回复速度都代表爱不爱你'});
+  if(riskLevel==='high') stopList.push({action:'停止忽视危险信号',reason:'你在这段关系中看到了太多红旗却选择了合理化'});
+  if(gottmanDom[0]==='stonewalling'&&gottmanDom[1]>=2) stopList.push({action:'停止用沉默代替沟通',reason:'逃避冲突只会让问题堆积，最终爆炸'});
+  if(gottmanDom[0]==='contempt'&&gottmanDom[1]>=2) stopList.push({action:'停止用讽刺和蔑视表达不满',reason:'蔑视是关系的头号杀手——它传递的不是"我不满"而是"你不行"'});
+  if(myType==='secure'&&(paType==='fearful'||paType==='dismissive')) stopList.push({action:'停止把"ta需要我"等同于"我要留下来"',reason:'你的善良让你看见ta的脆弱，但ta的依恋模式不是你能治愈的'});
+  if(stopList.length===0) stopList.push({action:'停止在关系中小心翼翼',reason:'你的测试结果显示关系基本健康——不需要过度紧张'});
+  stopList.push({action:'停止和别人的关系比较',reason:'每段关系都不一样，比较只会制造焦虑'});
+
+  h+=`<div class="warning-box">
+    <div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:12px;">🛑 停止做这些</div>`;
+  stopList.slice(0,3).forEach(s=>{
+    h+=`<div class="card" style="margin-bottom:8px;background:transparent;border-color:rgba(231,76,60,.15);">
+      <div style="font-size:13px;color:var(--text);font-weight:500;">${s.action}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">${s.reason}</div>
+    </div>`;
+  });
+  h+=`</div>`;
+
+  // Start doing
+  const startList = [];
+  if(myType==='anxious'||myType==='fearful') startList.push({action:'识别你的焦虑是真实的还是被触发的',timing:'现在',reason:'你的焦虑可能不是你的人格特质，而是这段关系激活的'});
+  if(satLevel==='low') startList.push({action:'认真考虑这段关系是否值得继续',timing:'尽快',reason:'满意度很低不是因为没有努力，是因为有些关系本来就不适合'});
+  startList.push({action:'建立关系之外的自我价值来源',timing:'持续',reason:'工作、朋友、爱好——不要把所有鸡蛋放在一个篮子里'});
+  if(startList.length<3) startList.push({action:'学习识别不健康的关系模式',timing:'下一段关系前',reason:'知道红旗长什么样，下次就能在早期识别'});
+  startList.push({action:'和信任的朋友聊一聊你的感受',timing:'本周',reason:'局外人能看到你看不见的东西'});
+
+  h+=`<div class="green-box">
+    <div style="font-size:14px;font-weight:600;color:var(--green);margin-bottom:12px;">✅ 开始做这些</div>`;
+  startList.slice(0,3).forEach(s=>{
+    h+=`<div class="card" style="margin-bottom:8px;background:transparent;border-color:rgba(46,204,113,.15);">
+      <div style="font-size:13px;color:var(--text);font-weight:500;">${s.action} <span style="font-size:11px;color:var(--text3);font-weight:400;">· ${s.timing}</span></div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px;">${s.reason}</div>
+    </div>`;
+  });
+  h+=`</div>
+    <div class="card" style="margin-top:8px;">
+      <div style="font-size:13px;color:var(--text2);line-height:2;">
+        <strong style="color:var(--text)">路线图：</strong><br>
+        第1-2周：消化这份报告的发现，不要急着做任何决定<br>
+        第3-4周：开始执行"停止做"和"开始做"列表<br>
+        第2-3个月：观察变化——是关系在变好，还是你在变好？
+      </div>
+    </div>
+  </div>`;
+
+  // ---- Section 9: Situational Attribution ----
+  let sectionNum = isSituational ? '09' : '';
+  if(isSituational){
+    h+=`<div class="section">
+      <div class="section-header">
+        <div class="section-num">09</div>
+        <div class="section-title">这不是你的错</div>
+      </div>
+      <div class="green-box">
+        <div style="font-size:16px;font-weight:600;color:var(--green);margin-bottom:12px;">🧠 情境性焦虑归因</div>
+        <div style="font-size:14px;color:var(--text);margin-bottom:12px;">你的依恋测试显示焦虑型/恐惧型，但你的关系满意度和危险信号数据表明——<strong>你的焦虑很可能是这段关系激活的，不是你的人格特质。</strong></div>
+        <div style="font-size:13px;color:var(--text2);line-height:2.2;">
+          ✅ 这不是你的错——你要求稳定回应是正常人的正常需求<br>
+          ✅ 你的安全基座还在——离开不健康的关系后你会恢复<br>
+          ✅ ta需要你不等于你要留下——这两件事是分开的
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ---- Behavior Prediction ----
+  const behaviorSectionNum = isSituational ? '10' : '09';
+  const paBehaviors={
+    secure:{preds:[{label:'坦诚表达分手感受',pct:85},{label:'理性处理情绪，不回避',pct:80},{label:'保持友好联系（如果双方愿意）',pct:65},{label:'主动反思关系中的问题',pct:75},{label:'不会消失或断联',pct:90}]},
+    anxious:{preds:[{label:'频繁查看你的社交动态',pct:90},{label:'反复纠结要不要联系你',pct:85},{label:'发朋友圈暗示心情',pct:70},{label:'找共同朋友打听你的消息',pct:60},{label:'深夜产生强烈联系冲动',pct:80}]},
+    dismissive:{preds:[{label:'完全断联，像什么都没发生过',pct:85},{label:'迅速投入工作或爱好转移注意力',pct:80},{label:'用"无所谓"掩饰失落',pct:75},{label:'不会主动回头联系',pct:70},{label:'在朋友面前表现得很好',pct:65}]},
+    fearful:{preds:[{label:'偷偷查看你的社交动态但不会点赞',pct:90},{label:'消失一段时间后突然出现',pct:75},{label:'用一个无关紧要的理由试探联系',pct:65},{label:'深夜想念但白天理性化压制',pct:80},{label:'在别人面前假装你不存在',pct:70}]}
+  };
+  const preds=paBehaviors[paType].preds;
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">${behaviorSectionNum}</div>
+      <div class="section-title">🔮 ta的行为预测</div>
+    </div>
+    <div class="blue-box">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:12px;">基于ta的依恋类型（${pa.name}）推测</div>`;
+  preds.forEach(p=>{
+    h+=`<div class="prob-bar"><span class="prob-label">${p.label}</span><div class="prob-track"><div class="prob-fill" style="width:${p.pct}%;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div></div><span class="prob-value" style="color:var(--blue)">${p.pct}%</span></div>`;
+  });
+  h+=`</div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px;">以上预测基于依恋类型理论，仅供参考</div>
+  </div>`;
+
+  // ═══════════════════════════════════════════
+  // NEW: Section - Future Prediction
+  // ═══════════════════════════════════════════
+  const predictSectionNum = isSituational ? '11' : '10';
+  const futurePaths = predictFuture(myType, paType, satScore, riskScore, gottmanCounts, langCounts);
+
+  const pathMeta = {
+    A: { name:'稳定发展', color:'var(--green)', bgColor:'rgba(46,204,113,.15)',
+         desc:'你们的依恋模式天然互补，沟通顺畅，未来大概率持续稳定' },
+    B: { name:'磨合成长', color:'var(--blue)', bgColor:'rgba(52,152,219,.15)',
+         desc:'存在差异但双方有成长意愿，经过磨合可以越来越好' },
+    C: { name:'消耗纠缠', color:'var(--orange)', bgColor:'rgba(230,126,34,.15)',
+         desc:'推拉循环，分了又合合了又分，最终可能是时间和精力的双重消耗' },
+    D: { name:'渐行渐远', color:'var(--red)', bgColor:'rgba(231,76,60,.15)',
+         desc:'核心需求不匹配，即使在一起也只是在等一个分手的契机' }
+  };
+
+  // Find highest path
+  const maxPath = Object.entries(futurePaths).sort((a,b)=>b[1]-a[1])[0][0];
+  const summaryTexts = {
+    A: '你们的基础很扎实，继续保持真诚沟通，未来可期。',
+    B: '你们之间存在差异但并非不可调和，关键在于双方是否愿意一起成长。',
+    C: '你们的互动模式正在消耗彼此，需要认真审视这段关系的投入产出比。',
+    D: '你们的感情可能正在走向终点，与其等待不如主动面对。'
+  };
+
+  h+=`<div class="section">
+    <div class="section-header">
+      <div class="section-num">${predictSectionNum}</div>
+      <div class="section-title">🔮 未来走向预测</div>
+    </div>
+    <div class="card" style="padding:28px;">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">基于依恋类型组合、满意度、危险信号和沟通模式综合计算</div>`;
+
+  // Horizontal bars for each path
+  ['A','B','C','D'].forEach(key => {
+    const pm = pathMeta[key];
+    const pct = futurePaths[key];
+    h+=`<div class="predict-bar-wrap">
+      <div class="predict-bar-label">
+        <span class="predict-bar-name" style="color:${pm.color}">${pm.name}</span>
+        <span class="predict-bar-pct" style="color:${pm.color}">${pct}%</span>
+      </div>
+      <div class="predict-bar-track">
+        <div class="predict-bar-fill" style="width:${pct}%;background:${pm.color}"></div>
+      </div>
+      <div class="predict-bar-desc">${pm.desc}</div>
+    </div>`;
+  });
+
+  h+=`</div>
+    <div class="highlight-box">
+      <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:8px;">📊 综合判断：${pathMeta[maxPath].name}（${futurePaths[maxPath]}%）</div>
+      <div style="font-size:13px;color:var(--text2);line-height:2;">${summaryTexts[maxPath]}</div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:8px;">预测基于多维度综合评分算法，仅供参考，感情走向取决于双方的选择</div>
+  </div>`;
+
+  // ---- Final verdict ----
+  let finalMessage = '';
+
+  if (riskLevel === 'high') {
+    if (myType === 'anxious' || myType === 'fearful') {
+      finalMessage = `这段关系里，你看到了太多红旗却选择了合理化——这真的不是你的错。<br><br>
+      你的焦虑不是你的人格问题，是这段关系激活的。就像童锦程说的：<strong>"有些人不是不爱你，是爱不起。"</strong><br><br>
+      你值得一段不需要你小心翼翼、不需要你过度解读的关系。对的人不需要你追，错的人你追不到。离开后你会发现，原来你可以那么安心。`;
+    } else if (myType === 'dismissive') {
+      finalMessage = `你在这段关系中看到了红旗，你的独立和理性让你比谁都清醒——但你的冷淡也让你习惯了忍受。<br><br>
+      童锦程说过：<strong>"先把自己活好。"</strong>你不需要为谁留下，也不需要为谁改变。你知道什么是对的，别让习惯模糊了你的判断。`;
+    } else {
+      finalMessage = `你在这段关系中看到了危险信号，你的稳定和善良让你想要理解ta、帮助ta——但有些东西不是你能治愈的。<br><br>
+      记住童锦程的话：<strong>"真诚才是最高级的套路。"</strong>你对ta的真诚，ta未必配得上。你的稳定不是你的弱点，是你的优点——别在错误的关系里消耗它。`;
+    }
+  } else if (satLevel === 'low') {
+    if (myType === 'anxious' || myType === 'fearful') {
+      finalMessage = `你的满意度很低，但你可能习惯了这样——习惯了不确定，习惯了等消息，习惯了猜测ta的心思。<br><br>
+      童锦程说过：<strong>"你若盛开蝴蝶自来。"</strong>你不需要通过这段关系证明自己的价值。你的焦虑不是因为你不够好，是因为这段关系本来就不适合你。`;
+    } else if (myType === 'dismissive') {
+      finalMessage = `你对这段关系的满意度很低，但你的独立让你习惯了忍受——你觉得"关系就是这样""谁都是这样"。<br><br>
+      但不是所有关系都这样。童锦程说：<strong>"先把自己活好。"</strong>你值得一段让你真正开心、不需要假装的关系。别因为习惯了就假装一切都好。`;
+    } else {
+      finalMessage = `你的满意度很低，但你的稳定让你想要理解、想要包容——你觉得"每段关系都有问题""我在努力就够了"。<br><br>
+      但努力不是万能的。童锦程说过：<strong>"感情这东西，不是你努力就有用的。"</strong>方向错了，越努力越远。你可以选择更好的。`;
+    }
+  } else if (satLevel === 'high' && riskLevel === 'low') {
+    if (dk === 'secure-secure') {
+      finalMessage = `你们的关系非常健康——两个安全型在一起，能够坦诚沟通、互相支持。<br><br>
+      童锦程说过：<strong>"真诚才是最高级的套路。"</strong>你们就是最好的证明。不需要套路，不需要猜，就做自己，关系就很好。继续保持，但也别忘了，好的关系也需要经营。`;
+    } else if (dk === 'secure-anxious' || dk === 'anxious-secure') {
+      finalMessage = `你的稳定给ta安全感，但ta的过度需求可能让你疲惫。你们的关系基本健康，但需要平衡。<br><br>
+      童锦程说过：<strong>"先把自己活好。"</strong>你的稳定是你的优点，但别让ta的需求消耗你。你可以给ta安全感，但不需要为ta的安全感负责。`;
+    } else if (paType === 'dismissive' || paType === 'fearful') {
+      finalMessage = `你们的关系满意度很高，危险信号也很少——但ta的回避倾向可能让你有时候觉得不够亲密。<br><br>
+      童锦程说过：<strong>"你若盛开蝴蝶自来。"</strong>你做得很好，但记住：ta需要距离不是你的错。你可以给ta空间，但也要表达你的需求。好的关系是双方都舒服。`;
+    } else {
+      finalMessage = `你们的关系整体健康——满意度高，危险信号少。你们都在努力，都在为这段关系付出。<br><br>
+      童锦程说过：<strong>"真诚才是最高级的套路。"</strong>你们就是最好的证明。继续保持沟通，保持真诚。关系不是终点，是过程——一起成长的过程。`;
+    }
+  } else {
+    if (myType === 'anxious' || myType === 'fearful') {
+      finalMessage = `你们的关系有好有坏——有时候让你觉得很甜，有时候让你觉得很累。这种起伏可能让你很困惑。<br><br>
+      童锦程说过：<strong>"对的人不需要你追，错的人你追不到。"</strong>你在努力，但你也需要想想：这种努力是不是双向的？好的关系不应该总是你在追。`;
+    } else if (myType === 'dismissive') {
+      finalMessage = `你们的关系不算太差，但也说不上有多好——你可能觉得"就这样吧""谁不是这样"。<br><br>
+      但童锦程说过：<strong>"先把自己活好。"</strong>你值得更好的，别因为习惯了就降低标准。你可以不离开，但也别假装一切都好。诚实一点，对自己好一点。`;
+    } else {
+      finalMessage = `你们的关系有好有坏——有甜也有苦。你在努力理解ta、包容ta，但有时候也会觉得累。<br><br>
+      童锦程说过：<strong>"感情这东西，不是你努力就有用的。"</strong>努力很重要，但方向更重要。你可以继续付出，但也要看看：这份努力是不是双向的？`;
+    }
+  }
+
+  finalMessage += `<br><br><div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);font-size:12px;color:var(--text3);">
+    结果基于心理学框架分析，仅供参考
+  </div>`;
+
+  h+=`<div class="section" style="margin-top:40px;">
+    <div class="highlight-box" style="text-align:center;padding:32px 24px;">
+      <div style="font-size:20px;font-weight:300;color:#fff;letter-spacing:2px;margin-bottom:16px;">最后的话</div>
+      <div style="font-size:14px;color:var(--text);line-height:2.2;max-width:500px;margin:0 auto;">
+        ${finalMessage}
+      </div>
+    </div>
+  </div>`;
+
+  // ═══════════════════════════════════════════
+  // NEW: Share Section
+  // ═══════════════════════════════════════════
+  h+=`<div class="share-section">
+    <p style="color:#fff;font-size:16px;margin-bottom:20px;">💬 把测试发给ta，看看结果是不是一样</p>
+    <button class="share-btn" onclick="copyLink()">复制链接分享</button>
+    <div class="share-copied" id="share-copied">✓ 链接已复制</div>
+    <p style="color:#666;font-size:12px;margin-top:16px;">截图结果页发小红书 · 带 #她不一样 #恋爱测试</p>
+  </div>`;
+
+  document.getElementById('results-content').innerHTML=h;
+  showPage('page-results');
+
+  // Draw charts after DOM is ready
+  setTimeout(()=>{
+    // Satisfaction radar
+    try{
+      const satLabels=['需求满足','整体满意','相对比较','负面想法','期待符合','爱意程度','问题多少'];
+      new Chart(document.getElementById('satCanvas'),{
+        type:'radar',
+        data:{labels:satLabels,datasets:[{
+          label:'满意度',
+          data:answers.satisfaction.map((v,i)=>{let s=v;if(mod2[i].rev) s=6-s;return s}),
+          borderColor:'#fd79a8',backgroundColor:'rgba(253,121,168,.1)',borderWidth:2,pointRadius:4,pointBackgroundColor:'#fd79a8'
+        }]},
+        options:{responsive:true,scales:{r:{min:0,max:5,ticks:{stepSize:1,color:'#666',backdropColor:'transparent'},grid:{color:'rgba(255,255,255,.06)'},pointLabels:{color:'#999',font:{size:11}}}},plugins:{legend:{display:false}}}
+      });
+    }catch(e){}
+
+    // Sternberg triangle
+    try{
+      new Chart(document.getElementById('sternCanvas'),{
+        type:'radar',
+        data:{labels:['激情','亲密','承诺'],datasets:[{
+          label:'斯滕伯格三角',
+          data:[passion,intimacy,commitment],
+          borderColor:'#6c5ce7',backgroundColor:'rgba(108,92,231,.12)',borderWidth:2,pointRadius:5,pointBackgroundColor:'#6c5ce7'
+        }]},
+        options:{responsive:true,scales:{r:{min:0,max:100,ticks:{stepSize:25,color:'#666',backdropColor:'transparent'},grid:{color:'rgba(255,255,255,.06)'},pointLabels:{color:'#e0e0e0',font:{size:13}}}},plugins:{legend:{display:false}}}
+      });
+    }catch(e){}
+
+    // Animate prediction bars
+    document.querySelectorAll('.predict-bar-fill').forEach(el => {
+      const targetWidth = el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => { el.style.width = targetWidth; }, 200);
+    });
+  },100);
+
+  // Track completion analytics (JSONBlob)
+  try {
+    const BLOB_ID='019eab36-de07-7197-a4ce-ea1541aed1af';
+    const API_URL=`https://jsonblob.com/api/jsonBlob/${BLOB_ID}`;
+    fetch(API_URL).then(r=>r.json()).then(d=>{
+      if(!d.quiz) d.quiz={total:0,results:[]};
+      d.quiz.total++;
+      d.quiz.results.push({myType,partnerType:paType,satisfaction:satScore,riskLevel,ts:new Date().toISOString()});
+      return fetch(API_URL,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+    }).catch(()=>{});
+  } catch(e){}
+}
+
+// ═══════════════════════════════════════════
+// SHARE FUNCTION
+// ═══════════════════════════════════════════
+function copyLink(){
+  const url = window.location.href;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>{
+      const el = document.getElementById('share-copied');
+      if(el){el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+    }).catch(()=>{fallbackCopy(url);});
+  } else {
+    fallbackCopy(url);
+  }
+}
+function fallbackCopy(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try{
+    document.execCommand('copy');
+    const el = document.getElementById('share-copied');
+    if(el){el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);}
+  }catch(e){}
+  document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>
