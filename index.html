@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>她不一样 · 心理学关系工具箱</title>
+<meta property="og:title" content="她不一样 · 心理学关系工具箱">
+<meta property="og:description" content="关系诊断 · 分手疗愈 · 相亲评分 · 依恋测试 — 基于心理学量表，不是玄学">
+<meta property="og:type" content="website">
+<style>
+:root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a26;--border:#2a2a3a;--pink:#fd79a8;--purple:#6c5ce7;--cyan:#06b6d4;--orange:#e67e22;--green:#2ecc71;--text:#e0e0e0;--text2:#999;--text3:#666;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif;line-height:1.8;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px;}
+
+/* Hero */
+.hero{text-align:center;padding:40px 0 28px;}
+.hero-label{font-size:11px;letter-spacing:6px;text-transform:uppercase;color:var(--pink);margin-bottom:14px;font-weight:500;}
+.hero-title{font-size:32px;font-weight:200;letter-spacing:6px;color:#fff;margin-bottom:10px;}
+.hero-sub{font-size:14px;color:var(--text2);letter-spacing:1px;max-width:480px;margin:0 auto;line-height:2;}
+.hero-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent);margin:20px auto;}
+
+/* Tools */
+.tools{display:flex;flex-direction:column;gap:16px;margin-top:8px;}
+.tool{display:block;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px;text-decoration:none;color:var(--text);transition:all .25s;position:relative;overflow:hidden;}
+.tool:hover{border-color:var(--pink);transform:translateY(-2px);box-shadow:0 8px 32px rgba(253,121,168,.08);}
+.tool:active{transform:translateY(0);}
+.tool-tag{display:inline-block;font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:10px;font-weight:600;margin-bottom:12px;}
+.tag-diagnose{background:rgba(253,121,168,.15);color:var(--pink);}
+.tag-heal{background:rgba(108,92,231,.15);color:var(--purple);}
+.tag-date{background:rgba(6,182,212,.15);color:var(--cyan);}
+.tag-attach{background:rgba(46,204,113,.15);color:var(--green);}
+.tool-title{font-size:18px;font-weight:600;color:#fff;margin-bottom:6px;}
+.tool-desc{font-size:13px;color:var(--text2);line-height:1.7;}
+.tool-meta{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;}
+.tool-meta span{font-size:11px;color:var(--text3);}
+.tool-arrow{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--text3);transition:all .25s;}
+.tool:hover .tool-arrow{color:var(--pink);transform:translateY(-50%) translateX(4px);}
+
+/* Section divider */
+.divider{text-align:center;margin:36px 0 20px;}
+.divider-line{height:1px;background:var(--border);margin-bottom:16px;}
+.divider-text{font-size:11px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;}
+
+/* Info */
+.info-box{background:var(--card);border-radius:12px;padding:20px;margin-top:28px;border-left:3px solid var(--pink);}
+.info-box h3{font-size:13px;color:var(--pink);margin-bottom:10px;letter-spacing:1px;}
+.info-box p{font-size:13px;color:var(--text2);line-height:1.8;}
+.info-box ul{list-style:none;padding:0;margin:8px 0;}
+.info-box li{font-size:12px;color:var(--text3);padding:3px 0;}
+.info-box li:before{content:"✓ ";color:var(--green);}
+
+/* Framework */
+.framework{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.fw-card{background:var(--card);border-radius:10px;padding:14px;text-align:center;}
+.fw-num{font-size:24px;font-weight:700;color:var(--pink);}
+.fw-label{font-size:11px;color:var(--text2);margin-top:4px;}
+
+/* Footer */
+.footer{text-align:center;margin-top:48px;padding:24px 0;border-top:1px solid var(--border);}
+.footer p{font-size:11px;color:var(--text3);line-height:1.8;}
+
+@media(max-width:600px){
+  .hero-title{font-size:26px;letter-spacing:4px;}
+  .framework{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label">Psychology Toolkit</div>
+    <h1 class="hero-title">她不一样</h1>
+    <p class="hero-sub">基于心理学量表的关系工具箱<br>不是星座玄学，是 ECR-S · Gottman · Sternberg</p>
+    <div class="hero-line"></div>
+  </div>
+
+  <!-- Tools -->
+  <div class="tools">
+
+    <!-- Tool 1: 关系诊断 -->
+    <a class="tool" href="quiz.html">
+      <span class="tool-tag tag-diagnose">关系诊断</span>
+      <div class="tool-title">🔍 你们能走多远？</div>
+      <div class="tool-desc">64 道题，5 个维度全面诊断你们的关系：依恋类型匹配、关系满意度、爱的语言、沟通模式（Gottman 四骑士）、危险信号。做完生成含雷达图和未来走向预测的完整报告。</div>
+      <div class="tool-meta">
+        <span>⏱ 约 15 分钟</span>
+        <span>📊 5 维度</span>
+        <span>🎯 64 题</span>
+      </div>
+      <span class="tool-arrow">→</span>
+    </a>
+
+    <!-- Tool 2: 相亲评分 -->
+    <a class="tool" href="date-score.html">
+      <span class="tool-tag tag-date">相亲评分</span>
+      <div class="tool-title">💎 相亲对象值多少分？</div>
+      <div class="tool-desc">输入对方条件（年龄、学历、职业、家庭、房车），系统按 4 层框架评分：硬条件 100 分 + 软条件 10 分 + 红旗扣分 + 市场定价分析。还附带"介绍人双标检测"功能。</div>
+      <div class="tool-meta">
+        <span>⏱ 约 5 分钟</span>
+        <span>📊 4 层框架</span>
+        <span>🎯 男女双版</span>
+      </div>
+      <span class="tool-arrow">→</span>
+    </a>
+
+    <!-- Tool 3: 分手疗愈 -->
+    <a class="tool" href="https://sparkling-taffy-a167ba.netlify.app/" target="_blank">
+      <span class="tool-tag tag-heal">分手疗愈</span>
+      <div class="tool-title">🌱 慢慢来 · 分手疗愈 90 天</div>
+      <div class="tool-desc">分手后的结构化陪伴工具。输入分手日期，AI 根据依恋理论和哀悼周期，判断你当前处于哪个疗愈阶段（冲击期→急性期→缓解期→整合期），给出针对性的建议和情绪追踪。</div>
+      <div class="tool-meta">
+        <span>⏱ 持续 90 天</span>
+        <span>📊 6 阶段</span>
+        <span>🎯 日常打卡</span>
+      </div>
+      <span class="tool-arrow">→</span>
+    </a>
+
+    <!-- Tool 4: 依恋类型 -->
+    <a class="tool" href="attachment-test.html">
+      <span class="tool-tag tag-attach">依恋测试</span>
+      <div class="tool-title">🧠 你的依恋类型是什么？</div>
+      <div class="tool-desc">12 题 ECR-S 简版量表，测出你是安全型 / 焦虑型 / 疏离型回避 / 恐惧型回避。了解自己在亲密关系中的行为模式，以及为什么会反复陷入同一种关系。</div>
+      <div class="tool-meta">
+        <span>⏱ 约 3 分钟</span>
+        <span>📊 ECR-S 量表</span>
+        <span>🎯 12 题</span>
+      </div>
+      <span class="tool-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- Divider -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-text">理论基础</div>
+  </div>
+
+  <!-- Framework -->
+  <div class="framework">
+    <div class="fw-card">
+      <div class="fw-num">ECR-S</div>
+      <div class="fw-label">依恋量表<br><span style="font-size:9px">Wei et al., 2007</span></div>
+    </div>
+    <div class="fw-card">
+      <div class="fw-num">Gottman</div>
+      <div class="fw-label">四骑士模型<br><span style="font-size:9px">离婚预测率 90%+</span></div>
+    </div>
+    <div class="fw-card">
+      <div class="fw-num">Sternberg</div>
+      <div class="fw-label">爱情三角<br><span style="font-size:9px">激情·亲密·承诺</span></div>
+    </div>
+    <div class="fw-card">
+      <div class="fw-num">Chapman</div>
+      <div class="fw-label">五种爱语<br><span style="font-size:9px">言语·时间·礼物·服务·触碰</span></div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="info-box">
+    <h3>我们的差异化</h3>
+    <p>市面上所有心理工具都在做"帮你自己变好"。我们做的是：</p>
+    <ul>
+      <li><b>双人关系诊断</b> — 不只测你，测你们</li>
+      <li><b>未来走向预测</b> — 基于依恋组合预测 4 条路径概率</li>
+      <li><b>相亲市场定价</b> — 4 层评分 + 红旗识别 + 介绍人双标检测</li>
+      <li><b>分手疗愈时间线</b> — 不说"时间会治愈"，告诉你现在第几天该什么感觉</li>
+      <li><b>纯前端隐私优先</b> — 所有数据在浏览器本地，不上传任何服务器</li>
+    </ul>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>她不一样 · 心理学关系工具箱<br>
+    基于 ECR-S / RAS / Gottman / Chapman / Sternberg 学术量表<br>
+    免费使用 · 数据本地 · 不收集任何信息<br>
+    <span style="color:var(--text3);font-size:10px;">v1.0 · 2026</span></p>
+  </div>
+</div>
+</body>
+</html>
