@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>依恋类型测试 · 她不一样</title>
+<style>
+:root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a26;--border:#2a2a3a;--green:#2ecc71;--blue:#3498db;--pink:#fd79a8;--red:#e74c3c;--purple:#6c5ce7;--orange:#e67e22;--text:#e0e0e0;--text2:#999;--text3:#666;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang SC',sans-serif;line-height:1.8;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 60px;}
+.back{display:inline-block;font-size:13px;color:var(--text2);text-decoration:none;margin-bottom:20px;padding:6px 14px;background:var(--card);border-radius:20px;border:1px solid var(--border);}
+.hero{text-align:center;padding:20px 0 30px;}
+.hero-title{font-size:24px;font-weight:300;color:#fff;letter-spacing:2px;}
+.hero-sub{font-size:13px;color:var(--text2);margin-top:6px;}
+.page{display:none;}.page.active{display:block;}
+.progress{height:4px;background:var(--border);border-radius:2px;margin:20px 0;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:2px;transition:width .3s;}
+.q-card{background:var(--card);border-radius:14px;padding:24px 20px;border:1px solid var(--border);}
+.q-num{font-size:11px;color:var(--green);letter-spacing:2px;margin-bottom:8px;}
+.q-text{font-size:16px;color:#fff;margin-bottom:20px;line-height:1.6;}
+.q-opts{display:flex;flex-direction:column;gap:8px;}
+.q-opt{padding:12px 16px;background:var(--card2);border:1px solid var(--border);border-radius:10px;font-size:14px;cursor:pointer;transition:all .2s;text-align:center;}
+.q-opt:hover{border-color:var(--green);}
+.q-opt.selected{background:var(--green);color:#000;border-color:var(--green);font-weight:600;}
+.scale-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:10px;padding:0 4px;}
+.result-box{text-align:center;padding:30px 0;}
+.type-badge{display:inline-block;padding:8px 20px;border-radius:20px;font-size:14px;font-weight:600;margin-bottom:12px;}
+.type-desc{font-size:14px;color:var(--text2);line-height:2;text-align:left;background:var(--card);border-radius:12px;padding:20px;margin-top:16px;}
+.type-desc h4{color:var(--green);font-size:13px;margin-bottom:8px;}
+.type-desc p{margin-bottom:12px;}
+.type-desc ul{list-style:none;padding:0;}
+.type-desc li{font-size:13px;padding:3px 0;color:var(--text2);}
+.type-desc li:before{content:"· ";color:var(--green);}
+.btn{display:block;width:100%;padding:14px;border-radius:30px;font-size:15px;font-weight:600;cursor:pointer;border:none;margin-top:16px;}
+.btn-go{background:linear-gradient(135deg,var(--green),var(--blue));color:#000;}
+.btn-again{background:var(--card);color:var(--text2);border:1px solid var(--border);}
+.score-display{display:flex;justify-content:center;gap:30px;margin:20px 0;}
+.score-item{text-align:center;}
+.score-val{font-size:32px;font-weight:700;}
+.score-label{font-size:11px;color:var(--text3);margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="portal.html">← 工具箱</a>
+  <div class="hero">
+    <div class="hero-title">🧠 依恋类型测试</div>
+    <div class="hero-sub">ECR-S 量表 · 12题 · 约3分钟</div>
+  </div>
+
+  <div id="intro" class="page active">
+    <div class="q-card">
+      <p style="font-size:14px;color:var(--text2);line-height:2;">
+        在亲密关系中，你属于哪种依恋类型？<br><br>
+        <b>安全型</b>：信任他人，也不怕独处<br>
+        <b>焦虑型</b>：总怕被抛弃，需要反复确认<br>
+        <b>疏离型回避</b>：觉得独立最重要，不太需要亲密<br>
+        <b>恐惧型回避</b>：又想要爱又怕受伤，忽冷忽热<br><br>
+        本测试基于 ECR-S（亲密关系经历量表简版），12 道题快速定位你的依恋类型。<br>
+        所有数据在浏览器本地处理，不会上传。
+      </p>
+      <button class="btn btn-go" onclick="start()">开始测试</button>
+    </div>
+  </div>
+
+  <div id="quiz" class="page">
+    <div class="progress"><div class="progress-bar" id="bar" style="width:0%"></div></div>
+    <div class="q-card" id="q-area"></div>
+  </div>
+
+  <div id="result" class="page">
+    <div class="result-box">
+      <div class="type-badge" id="badge"></div>
+      <div class="score-display" id="scores"></div>
+      <div class="type-desc" id="desc"></div>
+      <button class="btn btn-again" onclick="location.reload()">重新测试</button>
+      <a href="quiz.html" style="display:block;text-align:center;margin-top:12px;color:var(--green);font-size:13px;text-decoration:none;">→ 做完整的64题关系诊断</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions=[
+  "我倾向于依赖伴侣来回应我的需求。",
+  "我担心伴侣不会像我爱他/她那样爱我。",
+  "我担心被抛弃。",
+  // 焦虑反向
+  "我不担心被别人拒绝。",
+  "当伴侣不在身边时，我不太担心他/她去找别人。",
+  "我很少担心伴侣会离开我。",
+  // 回避正向
+  "我更喜欢不依赖别人的关系。",
+  "我不太愿意向伴侣展示我的内心世界。",
+  "我觉得很难完全信任别人。",
+  // 回避反向
+  "当需要帮助时，我很乐意依赖伴侣。",
+  "遇到困难时，我很乐意让伴侣来支持我。",
+  "向伴侣倾诉我的烦恼和担忧让我感到舒适。",
+];
+
+const opts=['完全不符合','不太符合','有点符合','比较符合','非常符合'];
+
+let answers=[];
+let qIdx=0;
+
+function start(){
+  answers=[];qIdx=0;
+  document.getElementById('intro').classList.remove('active');
+  document.getElementById('quiz').classList.add('active');
+  renderQ();
+}
+
+function renderQ(){
+  const area=document.getElementById('q-area');
+  document.getElementById('bar').style.width=((qIdx)/questions.length*100)+'%';
+  if(qIdx>=questions.length){showResult();return;}
+  area.innerHTML=`
+    <div class="q-num">第 ${qIdx+1} / ${questions.length} 题</div>
+    <div class="q-text">${questions[qIdx]}</div>
+    <div class="q-opts" id="opts">
+      ${opts.map((o,i)=>`<div class="q-opt" onclick="pick(${i})">${o}</div>`).join('')}
+    </div>
+    <div class="scale-labels"><span>完全不符合</span><span>非常符合</span></div>
+  `;
+}
+
+function pick(i){
+  answers[qIdx]=i+1;
+  document.querySelectorAll('#opts .q-opt').forEach((o,idx)=>{
+    if(idx===i)o.classList.add('selected');
+  });
+  setTimeout(()=>{qIdx++;renderQ();},200);
+}
+
+function showResult(){
+  document.getElementById('quiz').classList.remove('active');
+  document.getElementById('result').classList.add('active');
+
+  // 焦虑维度 = Q1-6, 回避维度 = Q7-12
+  let anxSum=0,avoSum=0;
+  for(let i=0;i<6;i++){
+    let v=answers[i];
+    if(i>=3)v=6-v; // 反向题
+    anxSum+=v;
+  }
+  for(let i=6;i<12;i++){
+    let v=answers[i];
+    if(i>=9)v=6-v; // 反向题
+    avoSum+=v;
+  }
+  let anxiety=anxSum/6;
+  let avoidance=avoSum/6;
+
+  // 阈值：焦虑≥3.62, 回避≥2.71
+  let type,typeColor,typeName;
+  const anxHigh=anxiety>=3.62;
+  const avoHigh=avoidance>=2.71;
+
+  if(!anxHigh&&!avoHigh){type='secure';typeName='安全型';typeColor='var(--green)';}
+  else if(anxHigh&&!avoHigh){type='anxious';typeName='焦虑型';typeColor='var(--orange)';}
+  else if(!anxHigh&&avoHigh){type='dismissive';typeName='疏离型回避';typeColor='var(--blue)';}
+  else{type='fearful';typeName='恐惧型回避';typeColor='var(--red)';}
+
+  const badge=document.getElementById('badge');
+  badge.textContent=typeName;
+  badge.style.background=typeColor+'22';
+  badge.style.color=typeColor;
+
+  document.getElementById('scores').innerHTML=`
+    <div class="score-item"><div class="score-val" style="color:${anxHigh?'var(--orange)':'var(--green)'}">${anxiety.toFixed(2)}</div><div class="score-label">焦虑维度</div></div>
+    <div class="score-item"><div class="score-val" style="color:${avoHigh?'var(--blue)':'var(--green)'}">${avoidance.toFixed(2)}</div><div class="score-label">回避维度</div></div>
+  `;
+
+  const desc={
+    secure:`<h4>安全型 (Secure)</h4>
+      <p>你信任他人，也不害怕独处。你认为亲密关系是安全的，值得投入的。你不会过度焦虑被抛弃，也不需要刻意回避亲密。</p>
+      <h4>你的特征</h4>
+      <ul><li>能自然地表达需求和情感</li><li>冲突时能理性沟通</li><li>独处时也感到舒适</li><li>对伴侣有基本信任</li></ul>
+      <h4>适合你的伴侣</h4>
+      <p>安全型 × 任何类型 = 相对稳定。但和另一个安全型最理想。</p>`,
+    anxious:`<h4>焦虑型 (Anxious-Preoccupied)</h4>
+      <p>你渴望亲密但总担心不够。你需要反复确认被爱，伴侣的冷淡或沉默会引发你的恐慌。你可能过度投入关系，忽略自己的需求。</p>
+      <h4>你的特征</h4>
+      <ul><li>总怕被抛弃，需要反复确认</li><li>伴侣不回消息会焦虑</li><li>愿意为关系付出很多</li><li>容易过度分析对方的言行</li></ul>
+      <h4>⚠️ 你需要注意</h4>
+      <p>焦虑型容易被回避型吸引（追-逃循环）。选择安全型伴侣会帮助你的焦虑逐渐缓解。</p>`,
+    dismissive:`<h4>疏离型回避 (Dismissive-Avoidant)</h4>
+      <p>你重视独立，不太需要亲密。你可能觉得"一个人也挺好的"，对依赖他人感到不适。当关系变得亲密时，你会本能地拉开距离。</p>
+      <h4>你的特征</h4>
+      <ul><li>独立，不喜欢被依赖</li><li>不容易暴露脆弱</li><li>亲密到一定程度会想逃</li><li>认为自己不需要别人</li></ul>
+      <h4>⚠️ 你需要注意</h4>
+      <p>回避型容易被焦虑型吸引（但关系会很痛苦）。你最大的成长是学会允许自己被需要。</p>`,
+    fearful:`<h4>恐惧型回避 (Fearful-Avoidant)</h4>
+      <p>你既渴望亲密又害怕受伤。你可能在"靠近"和"推开"之间反复——想要被爱，但当爱真的来临时又恐慌逃离。你的关系往往充满起伏。</p>
+      <h4>你的特征</h4>
+      <ul><li>"想要又害怕"的矛盾感</li><li>反复推拉（忽冷忽热）</li><li>对亲密既渴望又恐惧</li><li>可能有过创伤经历</li></ul>
+      <h4>⚠️ 你需要注意</h4>
+      <p>恐惧型在关系中容易陷入"追-逃"循环。心理咨询（特别是创伤聚焦疗法）可以帮助你建立更安全的依恋模式。</p>`,
+  };
+
+  document.getElementById('desc').innerHTML=desc[type];
+}
+</script>
+</body>
+</html>
