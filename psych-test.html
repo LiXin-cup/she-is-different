@@ -57,7 +57,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang 
   <a class="back" href="index.html">← 工具箱</a>
   <div class="hero">
     <div class="hero-title">🏥 心理诊断</div>
-    <div class="hero-sub">PHQ-9 · GAD-7 · MDQ · DASS-21 · PCL-5</div>
+    <div class="hero-sub">PHQ-9 · GAD-7 · MDQ · DASS-21 · PCL-5 · SDS · SAS</div>
   </div>
 
   <!-- Menu Page -->
@@ -99,6 +99,20 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang 
       <div class="scale-title">PCL-5 PTSD 筛查</div>
       <div class="scale-desc">创伤后应激障碍症状（适合经历重大事件后）</div>
       <div class="scale-meta">20题 · 约7分钟 · DSM-5标准</div>
+    </div>
+
+    <div class="scale-card" id="card-sds" onclick="startScale('sds')">
+      <span class="scale-tag" style="background:rgba(231,76,60,.15);color:var(--red);">抑郁深度</span>
+      <div class="scale-title">SDS 抑郁自评量表（完整版）</div>
+      <div class="scale-desc">Zung 氏20题标准版，含10道反向题，比PHQ-9更全面</div>
+      <div class="scale-meta">20题 · 约5分钟 · Zung 1965</div>
+    </div>
+
+    <div class="scale-card" id="card-sas" onclick="startScale('sas')">
+      <span class="scale-tag" style="background:rgba(52,152,219,.15);color:var(--blue);">焦虑深度</span>
+      <div class="scale-title">SAS 焦虑自评量表（完整版）</div>
+      <div class="scale-desc">Zung 氏20题标准版，含5道反向题，比GAD-7更全面</div>
+      <div class="scale-meta">20题 · 约5分钟 · Zung 1971</div>
     </div>
 
     <div id="report-btn-area" style="display:none;margin-top:20px;">
@@ -146,13 +160,22 @@ const scales = {
       '对事物专注有困难，例如阅读报纸或看电视时',
       '动作或说话速度缓慢到让别人察觉；或正好相反，烦躁或坐立不安',
       '有不如死掉或用某种方式伤害自己的念头',
+      // ── 补充条目 ──
+      '我感到胸闷或呼吸不畅',
+      '我注意到自己最近容易发脾气或烦躁',
+      '我对以前喜欢的事情失去兴趣',
+      '我感到未来没有希望',
+      '我发现自己难以做决定',
+      '我觉得生活没有意义',
+      '我因为情绪问题影响了工作或学习',
+      '我因为情绪问题回避社交活动',
     ],
     levels: [
-      {max:4,name:'无抑郁',color:'var(--green)',hint:'当前没有明显的抑郁症状'},
-      {max:9,name:'轻度抑郁',color:'var(--yellow)',hint:'建议关注情绪状态，定期自测'},
-      {max:14,name:'中度抑郁',color:'var(--orange)',hint:'建议寻求心理咨询'},
-      {max:19,name:'中重度抑郁',color:'var(--red)',hint:'强烈建议尽快前往精神科就诊'},
-      {max:27,name:'重度抑郁',color:'var(--red)',hint:'请尽快前往精神科就诊，不要拖延'},
+      {max:4,name:'无抑郁',color:'var(--green)',hint:'当前没有明显的抑郁症状，继续保持良好的心理状态'},
+      {max:9,name:'轻度抑郁',color:'var(--yellow)',hint:'存在轻微抑郁倾向，建议关注情绪状态、规律作息并定期自测'},
+      {max:14,name:'中度抑郁',color:'var(--orange)',hint:'抑郁已达中度，建议尽快寻求心理咨询或专业评估'},
+      {max:20,name:'中重度抑郁',color:'#ff6b3d',hint:'抑郁程度较重，强烈建议尽快前往精神科就诊'},
+      {max:51,name:'重度抑郁',color:'var(--red)',hint:'抑郁程度严重，请尽快前往精神科就诊，不要拖延'},
     ],
   },
   gad7: {
@@ -167,12 +190,20 @@ const scales = {
       '坐立不安，很难安静下来',
       '容易心烦或易怒',
       '感到害怕，好像有可怕的事要发生',
+      // ── 补充条目 ──
+      '我经常感到肌肉紧绷或酸痛',
+      '我发现自己频繁上厕所',
+      '我感到头晕或头昏',
+      '我因为担忧影响了食欲（吃太多或太少）',
+      '我难以控制自己的担忧念头',
+      '我感到不安或不安全',
+      '我因为焦虑回避了某些社交场合',
     ],
     levels: [
-      {max:4,name:'无焦虑',color:'var(--green)',hint:'当前没有明显的焦虑症状'},
-      {max:9,name:'轻度焦虑',color:'var(--yellow)',hint:'建议学习放松技巧，定期自测'},
-      {max:14,name:'中度焦虑',color:'var(--orange)',hint:'建议寻求心理咨询'},
-      {max:21,name:'重度焦虑',color:'var(--red)',hint:'强烈建议尽快前往精神科就诊'},
+      {max:4,name:'无焦虑',color:'var(--green)',hint:'当前没有明显的焦虑症状，继续保持良好状态'},
+      {max:9,name:'轻度焦虑',color:'var(--yellow)',hint:'存在轻微焦虑，建议学习放松技巧、规律运动并定期自测'},
+      {max:14,name:'中度焦虑',color:'var(--orange)',hint:'焦虑已达中度，建议寻求心理咨询或专业评估'},
+      {max:42,name:'重度焦虑',color:'var(--red)',hint:'焦虑程度较重，强烈建议尽快前往精神科就诊'},
     ],
   },
   mdq: {
@@ -296,6 +327,78 @@ const scales = {
     cutoff: 31,
     note: 'PCL-5临床截断值为31分。≥31分提示PTSD可能性较高，需要专业评估。',
   },
+  sds: {
+    name: 'SDS 抑郁自评量表',
+    instruction: '请根据最近一周的实际感受选择最符合的选项：',
+    opts: ['没有或很少时间','少部分时间','相当多时间','绝大部分或全部时间'],
+    questions: [
+      '我感到情绪沮丧、郁闷',
+      '我感到早晨心情最好',                                            // reverse
+      '我要哭或想哭',
+      '我夜间睡眠不好',
+      '我吃饭像平时一样多',                                            // reverse
+      '我的性功能正常',                                                // reverse
+      '我感到体重减轻',
+      '我为便秘烦恼',
+      '我的心跳比平时快',
+      '我无故感到疲劳',
+      '我的头脑像往常一样清楚',                                        // reverse
+      '我做像平时一样的事不感到困难',                                  // reverse
+      '我坐卧不安，难以保持平静',
+      '我对未来抱有希望',                                              // reverse
+      '我比平时更容易激怒',
+      '我觉得决定什么事很容易',                                        // reverse
+      '我感到自己是有用的和不可缺少的人',                              // reverse
+      '我的生活很有意义',                                              // reverse
+      '假若我死了别人会过得更好',
+      '我仍然喜爱自己平时喜爱的东西',                                  // reverse
+    ],
+    // 0-indexed positions of reverse-scored items
+    reverseItems: [1,4,5,10,11,13,15,16,17,19],
+    levels: [
+      {max:52,name:'正常',color:'var(--green)',hint:'当前抑郁程度在正常范围内'},
+      {max:62,name:'轻度抑郁',color:'var(--yellow)',hint:'存在轻度抑郁倾向，建议关注情绪并定期自测'},
+      {max:72,name:'中度抑郁',color:'var(--orange)',hint:'抑郁已达中度，建议寻求心理咨询或专业评估'},
+      {max:100,name:'重度抑郁',color:'var(--red)',hint:'抑郁程度严重，请尽快前往精神科就诊'},
+    ],
+    note: 'SDS（Zung抑郁自评量表）标准分 = 原始分 × 1.25 取整。标准分≥53提示存在抑郁倾向。',
+  },
+  sas: {
+    name: 'SAS 焦虑自评量表',
+    instruction: '请根据最近一周的实际感受选择最符合的选项：',
+    opts: ['没有或很少时间','少部分时间','相当多时间','绝大部分或全部时间'],
+    questions: [
+      '我觉得比平常容易紧张和着急',
+      '我无缘无故地感到害怕',
+      '我容易心烦意乱或感到惊恐',
+      '我感觉我可能将要发疯',
+      '我觉得一切都很好，不会发生什么不幸',                                // reverse
+      '我手脚发抖打颤',
+      '我因为头痛、颈痛和背痛而苦恼',
+      '我感觉容易衰弱和疲劳',
+      '我觉得不会晕倒，也不会失控',                                        // reverse
+      '我感觉心跳得很快',
+      '我因为一阵阵头晕而苦恼',
+      '我有晕倒发作，或觉得要晕倒似的',
+      '我呼吸顺畅，不感到困难',                                            // reverse
+      '我手脚麻木和刺痛',
+      '我因为胃痛和消化不良而苦恼',
+      '我夜里小便次数增多',
+      '我的手常常是干燥温暖的',                                            // reverse
+      '我脸红发热',
+      '我容易入睡并且一夜睡得很好',                                        // reverse
+      '我做噩梦',
+    ],
+    // 0-indexed positions of reverse-scored items (items 5, 9, 13, 17, 19 in 1-indexed)
+    reverseItems: [4, 8, 12, 16, 18],
+    levels: [
+      {max:49,name:'正常',color:'var(--green)',hint:'当前焦虑程度在正常范围内'},
+      {max:59,name:'轻度焦虑',color:'var(--yellow)',hint:'存在轻度焦虑倾向，建议学习放松技巧并定期自测'},
+      {max:69,name:'中度焦虑',color:'var(--orange)',hint:'焦虑已达中度，建议寻求心理咨询或专业评估'},
+      {max:100,name:'重度焦虑',color:'var(--red)',hint:'焦虑程度严重，请尽快前往精神科就诊'},
+    ],
+    note: 'SAS（Zung焦虑自评量表）标准分 = 原始分 × 1.25 取整。标准分≥50提示存在焦虑倾向。',
+  },
 };
 
 // ═══ State ═══
@@ -377,6 +480,11 @@ function finishScale() {
       score = answers.filter(a => a === 1 || a === 0 && answers[0] !== undefined).length;
       // MDQ: count "yes" (option index 0 = "是")
       score = answers.filter(a => a === 0).length;
+    } else if (currentScale === 'sds' || currentScale === 'sas') {
+      // SDS/SAS: handle reverse-scored items, raw sum × 1.25, rounded = standard score
+      let rev = new Set(s.reverseItems || []);
+      let raw = answers.reduce((acc, val, idx) => acc + (rev.has(idx) ? (3 - val) : val), 0);
+      score = Math.round(raw * 1.25);
     } else {
       score = answers.reduce((a, b) => a + b, 0);
     }
@@ -448,7 +556,7 @@ function showReport() {
   let hasResults = false;
   let crisis = false;
 
-  for (let key of ['phq9','gad7','mdq','dass21','pcl5']) {
+  for (let key of ['phq9','gad7','mdq','dass21','pcl5','sds','sas']) {
     if (!results[key]) continue;
     hasResults = true;
     const s = scales[key];
@@ -566,8 +674,8 @@ function drawTrendChart() {
   let hasTrend = false;
   let datasets = [];
   let allDates = new Set();
-  let colorMap = { phq9:'#e74c3c', gad7:'#3498db', mdq:'#9b59b6', pcl5:'#e67e22', depression:'#e74c3c', anxiety:'#3498db', stress:'#f1c40f' };
-  let labelMap = { phq9:'PHQ-9 抑郁', gad7:'GAD-7 焦虑', mdq:'MDQ 双相', pcl5:'PCL-5 PTSD', depression:'DASS抑郁', anxiety:'DASS焦虑', stress:'DASS压力' };
+  let colorMap = { phq9:'#e74c3c', gad7:'#3498db', mdq:'#9b59b6', pcl5:'#e67e22', sds:'#e74c3c', sas:'#3498db', depression:'#e74c3c', anxiety:'#3498db', stress:'#f1c40f' };
+  let labelMap = { phq9:'PHQ-9 抑郁', gad7:'GAD-7 焦虑', mdq:'MDQ 双相', pcl5:'PCL-5 PTSD', sds:'SDS 抑郁', sas:'SAS 焦虑', depression:'DASS抑郁', anxiety:'DASS焦虑', stress:'DASS压力' };
 
   for (let key in scaleData) {
     if (scaleData[key].length >= 2) {
