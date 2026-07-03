@@ -292,18 +292,17 @@ body{
       </div>
     </div>
 
-    <!-- Step 5: API key -->
+    <!-- Step 5: 准备开始 -->
     <div class="onb-step" data-step="5">
-      <div class="onb-q">AI 陪伴需要 Claude API Key</div>
-      <div class="onb-hint">你的对话直接发给 Anthropic 服务器，不经过任何中间方。Key 保存在你的浏览器本地。</div>
-      <input type="password" id="q-apikey" class="onb-input" placeholder="sk-ant-..." style="margin-bottom:12px;">
+      <div class="onb-q">准备好了吗？</div>
+      <div class="onb-hint" style="margin-bottom:16px;">基础陪伴功能完全免费，不需要注册，不需要 API Key。你的数据只存在浏览器本地。</div>
       <div style="font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:16px;">
-        没有 Key？前往 <a href="https://console.anthropic.com/" target="_blank" style="color:var(--warm);">console.anthropic.com</a> 注册。<br>
-        新账户有 $5 免费额度，足够使用数月。
+        💡 如果想要更深度的 AI 对话（可选），可以在「设置」中填入 API Key。<br>
+        不填也能正常使用——内置的本地陪伴引擎已经覆盖了分手疗愈的核心场景。
       </div>
       <div class="onb-nav">
         <button class="btn btn-ghost" onclick="prevStep()">上一步</button>
-        <button class="btn btn-primary" onclick="finishOnboarding()">进入</button>
+        <button class="btn btn-primary" onclick="finishOnboarding()">开始疗愈</button>
       </div>
     </div>
   </div>
@@ -518,16 +517,15 @@ function prevStep(){
   if(currentStep > 1){currentStep--;updateProgress();}
 }
 function finishOnboarding(){
-  const key = document.getElementById('q-apikey').value.trim();
-  if(!key || !key.startsWith('sk-')){
-    toast('请输入有效的 Claude API Key');
-    return;
+  // API Key 不再是必需的
+  const keyInput = document.getElementById('q-apikey');
+  if(keyInput){
+    const key = keyInput.value.trim();
+    if(key) state.apiKey = key;
   }
-  state.apiKey = key;
   state.setupDone = true;
   saveState();
   showMain();
-  // Welcome message from AI
   addAIMessage(getWelcomeMessage());
 }
 function getWelcomeMessage(){
@@ -740,18 +738,30 @@ async function sendMessage(){
   const input = document.getElementById('chat-input');
   const text = input.value.trim();
   if(!text) return;
-  if(!state.apiKey){toast('请先设置 API Key');switchTab('settings');return;}
 
   addUserMessage(text);
   input.value = '';
   input.style.height = 'auto';
 
-  // Crisis detection
+  // Crisis detection (always active)
   if(isCrisis(text)){
     addAIMessage(getCrisisResponse());
     return;
   }
 
+  // 没有API Key → 使用本地规则引擎
+  if(!state.apiKey){
+    showTyping();
+    setTimeout(()=>{
+      hideTyping();
+      const reply = localReply(text);
+      addAIMessage(reply);
+      saveMessage('assistant', reply);
+    }, 800 + Math.random() * 600);
+    return;
+  }
+
+  // 有API Key → 使用云端AI
   showTyping();
   try{
     const reply = await callClaude(text);
@@ -759,7 +769,9 @@ async function sendMessage(){
     addAIMessage(reply);
   }catch(e){
     hideTyping();
-    addAIMessage('我连接服务器时出了问题。你的话我收到了，但暂时回不了。可以等一下再试。\n\n错误：'+e.message);
+    // API失败时回退到本地引擎
+    const reply = localReply(text);
+    addAIMessage(reply + '\n\n（AI引擎暂时不可用，以上为本地回复）');
   }
 }
 function quickSend(text){
@@ -798,7 +810,103 @@ function getCrisisResponse(){
 你愿意继续和我聊也可以。我就在这里。`;
 }
 
-// ============ CLAUDE API ============
+// ============ 本地规则引擎（默认，零注册零联网） ============
+function localReply(userMessage){
+  const msg = userMessage.toLowerCase();
+  const days = Math.floor((Date.now() - new Date(state.breakupDate).getTime()) / 86400000);
+  const phase = getCurrentPhase(days);
+
+  // 危机检测
+  if(isCrisis(userMessage)) return crisisPrompt();
+
+  // 睡眠相关
+  if(/睡不着|失眠|睡眠|做.*梦|梦见|噩梦|睡不好/.test(msg)){
+    return `分手后${days}天，睡眠差是正常的。你的神经系统还在"待命模式"——4年多的关系形成了条件反射，大脑还没学会"她不在了也可以关机"。
+
+这不是你的问题，是生理反应。
+
+**今晚可以试：**
+- 睡前不看任何和她有关的东西
+- 固定时间躺下（即使睡不着）
+- 躺下后想3件今天做过的事（不管多小）
+
+睡眠会在3-6周后开始恢复。不用急。`;
+  }
+
+  // 想念
+  if(/想她|想他|想ta|忘不了|放不下|还是.*想|思念/.test(msg)){
+    return `你现在想ta，是因为${days < 90 ? '大脑还在戒断——4年的神经回路不可能' + days + '天就消退' : '怀旧期——记忆在重新整合，但强度已经比之前低了'}。
+
+想ta不代表你需要联系ta。想念和行动是两回事。
+
+**问自己：**
+- 我现在想ta，是因为孤独还是因为真的需要ta？
+- 如果我现在联系ta，72小时后我会觉得好还是更糟？`;
+  }
+
+  // 愤怒
+  if(/恨|气|愤怒|不值|后悔|浪费|凭什么/.test(msg)){
+    return `你的愤怒是合理的。
+
+${days < 30 ? '前30天愤怒是最强烈的阶段——你付出了9.5，她给了0.5，这种不对等换谁都会愤怒。' : '愤怒说明你在开始为自己争取——这是疗愈的信号，不是退步。'}
+
+允许自己生气。但不要做任何冲动的事。愤怒会推动你往前走，只要你别在愤怒的时候做决定。`;
+  }
+
+  // 好转迹象
+  if(/好.*多|好.*些|不那么|好像.*好了|今天.*还行|没那么/.test(msg)){
+    return `你注意到了自己的好转——这很重要。
+
+大多数人不会注意到自己在变好，因为变化是渐进的。你能觉察到"没那么难受了"，说明你的元认知在工作。
+
+**记住今天的感觉。** 下次难受的时候，告诉自己："我已经好过一次了，还会再好的。"`;
+  }
+
+  // 工作相关
+  if(/工作|上班|效率|专注|没精神|累|没动力/.test(msg)){
+    return `分手后精神差、工作效率低，是创伤反应，不是你偷懒。
+
+你现在的大脑在用大部分能量处理情绪创伤，留给工作的带宽自然少了。
+
+**不要强迫自己100%——60%就够了。** 你的身体在修复，给它时间。`;
+  }
+
+  // 好奇前任
+  if(/她.*怎么样|他.*怎么样|ta.*怎么样|看.*朋友圈|看.*小红书|她.*现在/.test(msg)){
+    return `你想知道ta现在怎么样——这很正常。
+
+但观察ta的动态不会让你更好。每一次查看都是在"喂食"那条神经回路。
+
+**如果你今天还没看过ta的动态——继续保持。**
+**如果看过了——没关系，但从现在开始停止。**
+
+你不需要通过观察ta来了解自己过得好不好。`;
+  }
+
+  // 后悔分手
+  if(/后悔|不该|错了|复合|回头|回去|重来/.test(msg)){
+    return `你现在想回头，是因为大脑在寻找"快速止痛药"。
+
+但回去不等于止痛——4年证明了，那段关系本身就是痛的来源。
+
+**在做任何决定之前，等7天。** 如果7天后你还是想联系ta，再来聊。冲动期的决定几乎都是错的。`;
+  }
+
+  // 阶段性鼓励
+  const phaseReply = {
+    shock: `你现在处于冲击期（0-14天）。所有感受都是正常的——麻木、否认、愤怒、崩溃，这些会交替出现。不需要"坚强"，也不需要"想开"。让它来，让它过。`,
+    acute: `你现在处于急性期（15-90天）。这是最难的阶段。睡眠差、情绪波动大、反复想念——都是预期内的。你不是有问题，你只是在第${days}天。`,
+    relief: `你现在处于缓解期（3-6个月）。最痛的时期正在过去。你可能会发现自己偶尔能笑了——那不是背叛，那是疗愈。`,
+    chronic: `你现在处于慢性恢复期（6-12个月）。情绪更稳定了，但偶尔还会被触发。这很正常——触发不等于倒退。`,
+    integration: `你现在处于整合期（1年以上）。大部分时候你不再被这件事困扰了。如果有偶尔的难过，那只是记忆，不是伤口。`,
+  };
+
+  return phaseReply[phase] || `我听到了你说的话。你现在在第${days}天，${phase === 'acute' ? '急性期' : phase === 'shock' ? '冲击期' : '恢复期'}。
+
+想说什么都可以，不需要组织好语言。你今天最难受的是什么？`;
+}
+
+// ============ API 调用（可选） ============
 async function callClaude(userMessage){
   const systemPrompt = buildSystemPrompt();
   // Build message history (last 10 turns)
