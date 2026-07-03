@@ -489,6 +489,8 @@ function finishScale() {
         </div>`;
     }
     h += '</div>';
+    // DASS-21 也加详细建议
+    h += getDetailedAdvice('dass21', subResults, null, answers);
     document.getElementById('result-content').outerHTML = `<div id="result-content">${h}</div>`;
   } else {
     let score;
@@ -532,6 +534,8 @@ function finishScale() {
       </div>`;
     }
     h += '</div>';
+    // ═══ 详细分析+建议 ═══
+    h += getDetailedAdvice(currentScale, score, level, answers);
     document.getElementById('result-content').outerHTML = `<div id="result-content">${h}</div>`;
   }
 
@@ -563,6 +567,159 @@ function finishScale() {
   backBtn.id = 'back-to-menu-btn';
   let existing = document.getElementById('back-to-menu-btn');
   if (!existing) document.querySelector('#result .nav-links').insertAdjacentElement('beforebegin', backBtn);
+}
+
+// ═══ 详细分析+建议引擎 ═══
+function getDetailedAdvice(scaleKey, score, level, ans){
+  const advice = {
+    phq9: ()=>{
+      let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:14px;">📋 详细分析</h3>`;
+      // 分析各维度
+      const dims = ['兴趣减退','情绪低落','睡眠问题','精力不足','食欲变化','自我评价低','注意力差','精神运动变化','自杀意念'];
+      let highItems = [];
+      ans.forEach((v,i)=>{
+        if(v >= 2 && dims[i]) highItems.push(dims[i]);
+      });
+      if(highItems.length > 0){
+        h += `<p style="font-size:13px;color:var(--text2);margin-bottom:10px;">你得分较高的维度：</p><ul style="font-size:13px;color:var(--orange);margin-bottom:14px;padding-left:20px;">`;
+        highItems.forEach(i => h += `<li style="margin-bottom:4px;">${i}</li>`);
+        h += `</ul>`;
+      }
+      // 分级建议
+      if(score <= 4){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">当前没有明显的抑郁症状。建议保持规律作息、定期运动、维持社交连接。每2-3个月自测一次，关注变化趋势。</p>`;
+      } else if(score <= 9){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">存在轻度抑郁倾向。建议：<br>① 每周3次以上有氧运动（每次30分钟）<br>② 保持规律作息，固定起床时间<br>③ 减少独处时间，主动联系朋友<br>④ 每周自测一次，如果分数持续上升超过2周，建议寻求心理咨询</p>`;
+      } else if(score <= 14){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">抑郁已达中度。建议：<br>① 尽快预约心理咨询（推荐认知行为疗法CBT）<br>② 告诉信任的人你的状态，不要独自扛<br>③ 减少或暂停酒精、咖啡因<br>④ 如果有条件，到三甲医院精神科做一次系统评估<br>⑤ 每天记录情绪（可以用本工具的心情记录功能）</p>`;
+      } else if(score <= 20){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;"><b style="color:var(--orange);">中重度抑郁，强烈建议尽快就医。</b><br>① 本周内预约精神科门诊（华山医院/当地三甲精神科）<br>② 医生可能会建议药物治疗+心理治疗双管齐下<br>③ 告知家人你的状态，建立支持系统<br>④ 不要做重大决定（辞职/分手/搬家等）<br>⑤ 如果有自伤念头，立即拨打 400-161-9995</p>`;
+      } else {
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;"><b style="color:var(--red);">重度抑郁，请尽快就医，不要拖延。</b><br>① 今天或明天就去精神科急诊<br>② 不要独自待着，告诉身边的人<br>③ 药物治疗是第一优先级<br>④ 全国心理援助热线 400-161-9995（24小时免费）</p>`;
+      }
+      h += `</div>`;
+      return h;
+    },
+    gad7: ()=>{
+      let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:14px;">📋 详细分析</h3>`;
+      const dims = ['紧张焦虑','无法控制担忧','过度担忧','难以放松','坐立不安','易怒','不祥预感'];
+      let highItems = [];
+      ans.forEach((v,i)=>{ if(v >= 2 && dims[i]) highItems.push(dims[i]); });
+      if(highItems.length > 0){
+        h += `<p style="font-size:13px;color:var(--text2);margin-bottom:10px;">你得分较高的维度：</p><ul style="font-size:13px;color:var(--blue);margin-bottom:14px;padding-left:20px;">`;
+        highItems.forEach(i => h += `<li>${i}</li>`);
+        h += `</ul>`;
+      }
+      if(score <= 4){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">当前没有明显的焦虑症状。继续保持。如果你在经历压力事件，可以学习一些放松技巧（腹式呼吸、渐进性肌肉放松）作为预防。</p>`;
+      } else if(score <= 9){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">存在轻度焦虑。建议：<br>① 学习腹式呼吸法（4秒吸气-7秒屏息-8秒呼气）<br>② 每天10分钟正念冥想<br>③ 减少咖啡因摄入<br>④ 关注"担忧"出现的时间段和触发事件<br>⑤ 如果持续2周以上加重，建议心理咨询</p>`;
+      } else if(score <= 14){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">焦虑已达中度。建议：<br>① 寻求专业心理咨询（推荐CBT认知行为疗法）<br>② 焦虑的本质是"对未来不确定性的恐惧"——写下你担心的具体事，区分"可控"和"不可控"<br>③ 规律运动（焦虑人群对运动的反应尤其好）<br>④ 避免反复搜索症状（健康焦虑常见陷阱）<br>⑤ 考虑到精神科评估是否需要药物辅助</p>`;
+      } else {
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;"><b style="color:var(--red);">重度焦虑，强烈建议就医。</b><br>① 重度焦虑常伴随躯体症状（心悸/手抖/失眠/肠胃问题），你可能已经反复去过内科但查不出问题——这是焦虑的躯体化<br>② 精神科可以开抗焦虑药物（SSRI类），效果通常2-4周显现<br>③ 药物+心理咨询双管齐下效果最好<br>④ 急性焦虑发作（惊恐发作）时：告诉自己"这不是心脏病，这是焦虑，3-5分钟就会过去"</p>`;
+      }
+      h += `</div>`;
+      return h;
+    },
+    mdq: ()=>{
+      let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:14px;">📋 详细分析</h3>`;
+      if(score <= 4){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">目前没有明显的躁狂/轻躁狂特征。如果你之前做过PHQ-9且分数较高，但MDQ阴性，大概率是单相抑郁而非双相。但仍需专业医生确认。</p>`;
+      } else if(score <= 9){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">部分躁狂特征出现。这不一定是双相——有时候正常的兴奋、精力旺盛、自信也会导致高分。但如果这些状态与抑郁交替出现，需要警惕双相可能。<br><br>建议：到精神科做一次系统评估，告诉医生你的情绪波动周期。</p>`;
+      } else {
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;"><b style="color:var(--red);">双相筛查阳性。</b><br><br>这并不意味着你一定患有双相情感障碍，但意味着你需要专业评估。<br><br><b>关键问题：</b><br>① 你是否经历过"精力异常旺盛、不需要怎么睡还精神很好、觉得自己无所不能"的时期？<br>② 这种时期是否持续了4天以上？<br>③ 这段时期和你的抑郁期是否交替出现？<br><br>如果三个问题都是"是"，双相Ⅱ型的可能性很高。<br><br><b>为什么这很重要：</b><br>双相Ⅱ型被误诊为单相抑郁的概率是30-50%。如果你实际上是双相但被当作单相抑郁治疗，抗抑郁药单用可能诱发躁狂转相——让你感觉"更糟了"。<br><br><b>建议：</b><br>① 尽快到精神科就诊<br>② 在就诊时主动告诉医生你做过MDQ筛查且为阳性<br>③ 告诉医生你的情绪波动周期（包括"异常好"的时期）<br>④ 双相的治疗药物（情绪稳定剂如锂盐/丙戊酸/拉莫三嗪）与单相抑郁不同</p>`;
+      }
+      h += `</div>`;
+      return h;
+    },
+    dass21: ()=>{
+      let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:14px;">📋 DASS-21 综合建议</h3>`;
+      let worst = '';
+      let worstScore = 0;
+      const labels = {depression:'抑郁',anxiety:'焦虑',stress:'压力'};
+      for(let sub of ['depression','anxiety','stress']){
+        if(score[sub] && score[sub].score > worstScore){
+          worstScore = score[sub].score;
+          worst = sub;
+        }
+      }
+      if(worst){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">你最突出的问题是<b style="color:var(--orange);">${labels[worst]}</b>（${score[worst].score}分，${score[worst].level.name}）。建议优先处理这个维度。</p>`;
+      }
+      // 共病分析
+      let elevated = [];
+      for(let sub of ['depression','anxiety','stress']){
+        if(score[sub] && score[sub].score > 9) elevated.push(labels[sub]);
+      }
+      if(elevated.length >= 2){
+        h += `<p style="font-size:13px;color:var(--orange);line-height:1.8;margin-top:10px;">⚠️ 你在<b>${elevated.join(' + ')}</b>维度都达到了中度以上。这种共病模式很常见，但也更影响生活质量。建议寻求专业帮助同时处理。</p>`;
+      }
+      h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;margin-top:10px;">综合建议：<br>① 压力维度高 → 识别压力源（工作/关系/经济），尝试减少或改变应对方式<br>② 焦虑维度高 → 学习放松技巧+减少咖啡因+运动<br>③ 抑郁维度高 → 规律作息+社交连接+必要时就医<br>④ 三个维度都高 → 优先就医，药物+心理咨询<br>⑤ 每2周自测一次，追踪变化趋势</p>`;
+      h += `</div>`;
+      return h;
+    },
+    pcl5: ()=>{
+      let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:14px;">📋 详细分析</h3>`;
+      // PTSD 4 cluster analysis
+      const clusters = {
+        '再体验（侵入性记忆/梦）': [0,1,2,3,4],
+        '回避': [5,6],
+        '认知/情绪负面改变': [7,8,9,10,11,12,13],
+        '过度警觉': [14,15,16,17,18,19],
+      };
+      let clusterScores = {};
+      for(let name in clusters){
+        let s = clusters[name].reduce((a,idx)=> a + (ans[idx]||0), 0);
+        clusterScores[name] = s;
+      }
+      h += `<p style="font-size:13px;color:var(--text2);margin-bottom:10px;">PTSD 四维度分析：</p>`;
+      for(let name in clusterScores){
+        let pct = clusterScores[name] / (clusters[name].length * 4) * 100;
+        let color = pct > 60 ? 'var(--red)' : pct > 30 ? 'var(--orange)' : 'var(--green)';
+        h += `<div class="dim-bar" style="margin-bottom:8px;"><div class="dim-fill" style="width:${pct}%;background:${color};"></div><span class="dim-label">${name}</span><span class="dim-score">${clusterScores[name]}/${clusters[name].length*4}</span></div>`;
+      }
+      if(score >= 31){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;margin-top:14px;">你的分数超过PTSD临床截断值(31分)。<br><br>建议：<br>① 寻求创伤聚焦心理治疗（推荐EMDR眼动脱敏再加工或创伤聚焦CBT）<br>② 告诉治疗师你的创伤事件（不需要告诉所有人）<br>③ PTSD不是"你想太多"——你的杏仁核在过度保护你，需要专业帮助重新校准<br>④ 避免用酒精/药物自我麻醉<br>⑤ 如果闪回严重，到医院精神科可能需要药物辅助</p>`;
+      } else if(score >= 11){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;margin-top:14px;">存在部分创伤后症状但未达PTSD诊断阈值。建议：关注触发因素，学习着陆技术（5-4-3-2-1感官法），如果症状加重及时就医。</p>`;
+      } else {
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;margin-top:14px;">当前没有明显的创伤后应激症状。如果未来经历重大创伤事件，2-4周后可以重新评估。</p>`;
+      }
+      h += `</div>`;
+      return h;
+    },
+    sds: ()=>{
+      let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:14px;">📋 详细分析</h3>`;
+      if(score < 53){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SDS标准分 ${score}，在正常范围内。你的抑郁主观感受处于健康水平。建议保持当前的生活状态，定期关注情绪变化。</p>`;
+      } else if(score < 63){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SDS标准分 ${score}，轻度抑郁。<br>SDS比PHQ-9更全面（含躯体症状如便秘、心悸、体重变化），你的分数提示不仅有情绪症状，可能有躯体化表现。<br><br>建议：关注身体信号（睡眠/食欲/消化），这些往往比情绪更早提示问题。每周自测追踪趋势。</p>`;
+      } else if(score < 73){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SDS标准分 ${score}，中度抑郁。你的躯体症状和情绪症状都已明显。建议尽快寻求专业帮助——心理咨询+必要时精神科评估药物方案。</p>`;
+      } else {
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SDS标准分 ${score}，重度抑郁。躯体和情绪症状都很严重。请尽快到精神科就诊，不要拖延。药物干预在这个阶段是必要的。</p>`;
+      }
+      h += `</div>`;
+      return h;
+    },
+    sas: ()=>{
+      let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:14px;">📋 详细分析</h3>`;
+      if(score < 50){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SAS标准分 ${score}，在正常范围内。你的焦虑水平健康。</p>`;
+      } else if(score < 60){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SAS标准分 ${score}，轻度焦虑。SAS包含大量躯体症状（手抖/出汗/心悸/尿频/头晕），你的躯体化信号已经出现。建议：减少咖啡因+规律运动+学习腹式呼吸。</p>`;
+      } else if(score < 70){
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SAS标准分 ${score}，中度焦虑。躯体症状已经明显影响日常生活。建议到精神科或心理科就诊，可能需要药物+CBT双管齐下。</p>`;
+      } else {
+        h += `<p style="font-size:13px;color:var(--text2);line-height:1.8;">SAS标准分 ${score}，重度焦虑。你可能经常经历惊恐发作（突然的强烈恐惧+心悸+呼吸困难+濒死感）。请尽快就医，SSRI类药物+苯二氮卓类（短期）可以有效控制。</p>`;
+      }
+      h += `</div>`;
+      return h;
+    },
+  };
+  return (advice[scaleKey] || (()=>''))();
 }
 
 function showReport() {
