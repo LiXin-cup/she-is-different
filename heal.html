@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>慢慢来 · 分手疗愈陪伴</title>
+<style>
+:root{
+  --bg:#1a1625;
+  --bg2:#221c30;
+  --card:#2a2340;
+  --card2:#332a47;
+  --border:#3d3354;
+  --text:#f0ebe5;
+  --text2:#b8b0c5;
+  --text3:#7d7588;
+  --warm:#f4a261;
+  --warm2:#e76f51;
+  --soft:#e9c46a;
+  --calm:#2a9d8f;
+  --pink:#e5809e;
+  --purple:#9d8cd5;
+  --red:#e63946;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,'PingFang SC','Noto Sans SC','Microsoft YaHei',sans-serif;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ========== APP ROOT ========== */
+#app{min-height:100vh;display:flex;flex-direction:column;}
+
+.screen{display:none;flex:1;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ========== WELCOME SCREEN ========== */
+#welcome{align-items:center;justify-content:center;padding:40px 24px;text-align:center;}
+.welcome-icon{font-size:56px;margin-bottom:24px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.welcome-title{font-size:30px;font-weight:200;letter-spacing:4px;margin-bottom:12px;color:#fff;}
+.welcome-sub{font-size:14px;color:var(--text2);letter-spacing:1px;line-height:2;max-width:340px;margin:0 auto 36px;}
+.welcome-features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:380px;margin:0 auto 36px;}
+.feature{padding:16px 8px;background:var(--card);border:1px solid var(--border);border-radius:12px;}
+.feature-icon{font-size:24px;margin-bottom:8px;}
+.feature-text{font-size:11px;color:var(--text2);letter-spacing:0.5px;}
+.btn{display:inline-block;padding:14px 36px;border-radius:30px;font-size:14px;font-weight:500;letter-spacing:1px;cursor:pointer;border:none;transition:all .25s;font-family:inherit;}
+.btn-primary{background:linear-gradient(135deg,var(--warm),var(--warm2));color:#fff;box-shadow:0 6px 20px rgba(231,111,81,.3);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(231,111,81,.4);}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--warm);color:var(--warm);}
+.welcome-foot{font-size:11px;color:var(--text3);margin-top:24px;letter-spacing:0.5px;}
+
+/* ========== ONBOARDING ========== */
+#onboarding{padding:24px;max-width:480px;margin:0 auto;width:100%;}
+.onb-progress{display:flex;gap:6px;margin-bottom:32px;}
+.onb-dot{flex:1;height:3px;background:var(--border);border-radius:2px;transition:background .3s;}
+.onb-dot.active{background:var(--warm);}
+.onb-dot.done{background:var(--calm);}
+.onb-step{display:none;}
+.onb-step.active{display:block;animation:fadeIn .4s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.onb-q{font-size:20px;font-weight:300;color:#fff;margin-bottom:8px;letter-spacing:1px;}
+.onb-hint{font-size:13px;color:var(--text3);margin-bottom:24px;}
+.onb-options{display:flex;flex-direction:column;gap:10px;}
+.onb-opt{padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:all .2s;font-size:14px;color:var(--text);}
+.onb-opt:hover{border-color:var(--warm);background:var(--card2);}
+.onb-opt.selected{border-color:var(--warm);background:rgba(244,162,97,.08);color:#fff;}
+.onb-opt small{display:block;font-size:11px;color:var(--text3);margin-top:4px;}
+.onb-input{width:100%;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit;outline:none;}
+.onb-input:focus{border-color:var(--warm);}
+.onb-nav{display:flex;gap:10px;margin-top:32px;}
+.onb-nav .btn{flex:1;text-align:center;padding:12px;}
+
+/* ========== MAIN APP ========== */
+#main{flex-direction:column;height:100vh;}
+.main-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:var(--bg2);}
+.header-title{font-size:15px;font-weight:500;color:#fff;letter-spacing:1px;}
+.header-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.header-nav{display:flex;gap:6px;}
+.nav-btn{padding:8px 14px;background:transparent;border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:12px;cursor:pointer;font-family:inherit;}
+.nav-btn.active,.nav-btn:hover{background:var(--card);color:var(--warm);border-color:var(--warm);}
+
+.tab-content{display:none;flex:1;overflow-y:auto;}
+.tab-content.active{display:block;}
+
+/* ========== CHAT ========== */
+#tab-chat{display:flex;flex-direction:column;}
+.chat-messages{flex:1;overflow-y:auto;padding:20px 16px 120px;}
+.msg{margin-bottom:16px;max-width:88%;animation:fadeIn .3s;}
+.msg.ai{align-self:flex-start;}
+.msg.me{align-self:flex-end;margin-left:auto;}
+.msg-bubble{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-wrap:break-word;}
+.msg.ai .msg-bubble{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text);}
+.msg.me .msg-bubble{background:linear-gradient(135deg,var(--warm),var(--warm2));color:#fff;border-bottom-right-radius:4px;}
+.msg-time{font-size:10px;color:var(--text3);margin-top:4px;padding:0 4px;}
+.msg.ai .msg-time{text-align:left;}
+.msg.me .msg-time{text-align:right;}
+.chat-typing{padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px;display:inline-block;margin-bottom:16px;}
+.chat-typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text3);margin:0 2px;animation:typing 1.4s infinite;}
+.chat-typing span:nth-child(2){animation-delay:.2s;}
+.chat-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typing{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+.chat-input-area{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;align-items:flex-end;}
+.chat-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:10px 16px;color:var(--text);font-size:14px;font-family:inherit;outline:none;resize:none;max-height:120px;line-height:1.5;}
+.chat-input:focus{border-color:var(--warm);}
+.chat-send{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--warm),var(--warm2));border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;}
+.chat-quick{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;background:var(--bg2);border-top:1px solid var(--border);}
+.chat-quick::-webkit-scrollbar{display:none;}
+.quick-btn{flex-shrink:0;padding:6px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;font-size:12px;color:var(--text2);cursor:pointer;font-family:inherit;white-space:nowrap;}
+.quick-btn:hover{color:var(--warm);border-color:var(--warm);}
+
+/* ========== TIMELINE ========== */
+#tab-timeline{padding:24px 20px 60px;max-width:600px;margin:0 auto;}
+.tl-header{text-align:center;margin-bottom:28px;}
+.tl-day{font-size:42px;font-weight:200;color:var(--warm);letter-spacing:2px;}
+.tl-day-label{font-size:12px;color:var(--text3);letter-spacing:2px;margin-top:4px;}
+.tl-stage{padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center;margin-bottom:24px;}
+.tl-stage-name{font-size:16px;color:#fff;font-weight:500;margin-bottom:4px;}
+.tl-stage-desc{font-size:12px;color:var(--text2);line-height:1.7;}
+.tl-stages{position:relative;padding-left:24px;}
+.tl-stages::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--warm),var(--calm),var(--purple));border-radius:1px;}
+.tl-stage-item{position:relative;margin-bottom:20px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;}
+.tl-stage-item::before{content:'';position:absolute;left:-21px;top:18px;width:10px;height:10px;border-radius:50%;border:2px solid var(--warm);background:var(--bg);}
+.tl-stage-item.done::before{background:var(--calm);border-color:var(--calm);}
+.tl-stage-item.current::before{background:var(--warm);box-shadow:0 0 0 4px rgba(244,162,97,.2);}
+.tl-stage-period{font-size:11px;color:var(--warm);letter-spacing:1px;margin-bottom:4px;}
+.tl-stage-item.done .tl-stage-period{color:var(--calm);}
+.tl-stage-title{font-size:14px;color:#fff;font-weight:500;margin-bottom:4px;}
+.tl-stage-body{font-size:12px;color:var(--text2);line-height:1.7;}
+
+/* ========== MOOD ========== */
+#tab-mood{padding:24px 20px 60px;max-width:600px;margin:0 auto;}
+.mood-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.mood-title{font-size:15px;color:#fff;margin-bottom:16px;font-weight:500;}
+.mood-emoji-row{display:flex;justify-content:space-around;margin-bottom:16px;}
+.mood-emoji{font-size:32px;cursor:pointer;transition:transform .2s;padding:8px;border-radius:50%;}
+.mood-emoji:hover{transform:scale(1.15);}
+.mood-emoji.selected{background:rgba(244,162,97,.15);transform:scale(1.2);}
+.mood-note{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;resize:none;min-height:60px;}
+.mood-note:focus{border-color:var(--warm);}
+.mood-history{margin-top:20px;}
+.mood-h-title{font-size:13px;color:var(--text2);margin-bottom:12px;}
+.mood-list{display:flex;flex-direction:column;gap:8px;}
+.mood-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;}
+.mood-item-emoji{font-size:20px;}
+.mood-item-date{font-size:11px;color:var(--text3);margin-left:auto;}
+.mood-item-note{font-size:12px;color:var(--text2);flex:1;}
+
+/* ========== SETTINGS ========== */
+#tab-settings{padding:24px 20px 60px;max-width:600px;margin:0 auto;}
+.set-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
+.set-title{font-size:14px;color:var(--warm);letter-spacing:1px;margin-bottom:12px;font-weight:500;}
+.set-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(61,51,84,.4);}
+.set-row:last-child{border-bottom:none;}
+.set-label{font-size:13px;color:var(--text2);}
+.set-value{font-size:13px;color:var(--text);}
+.set-input{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;font-family:inherit;outline:none;width:180px;}
+.set-input:focus{border-color:var(--warm);}
+.set-warn{font-size:11px;color:var(--text3);line-height:1.7;margin-top:8px;}
+.danger-btn{background:transparent;border:1px solid var(--red);color:var(--red);padding:10px 20px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;margin-top:8px;}
+.danger-btn:hover{background:rgba(230,57,70,.1);}
+
+/* ========== CRISIS BANNER ========== */
+.crisis{background:linear-gradient(135deg,rgba(230,57,70,.15),rgba(231,111,81,.15));border:1px solid rgba(230,57,70,.3);border-radius:12px;padding:16px;margin:16px 0;}
+.crisis-title{font-size:13px;color:var(--red);font-weight:600;margin-bottom:6px;}
+.crisis-text{font-size:12px;color:var(--text2);line-height:1.7;}
+
+/* ========== TOAST ========== */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--card);border:1px solid var(--warm);color:var(--text);padding:10px 20px;border-radius:20px;font-size:13px;z-index:9999;transition:transform .3s;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:600px){
+  .welcome-title{font-size:24px;}
+  .welcome-features{grid-template-columns:1fr;}
+  .tl-day{font-size:32px;}
+  .main-header{padding:10px 12px;}
+  .header-title{font-size:13px;}
+  .nav-btn{padding:6px 10px;font-size:11px;}
+  .chat-messages{padding:16px 12px 120px;}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ========== WELCOME ========== -->
+  <div id="welcome" class="screen active">
+    <div class="welcome-icon">🌱</div>
+    <div class="welcome-title">慢慢来</div>
+    <div class="welcome-sub">
+      你正在经历一段难走的路。<br>
+      这里没有"想开点"，没有"时间会冲淡一切"。<br>
+      只有懂你的陪伴，和一段可以走完的疗愈路径。
+    </div>
+    <div class="welcome-features">
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <div class="feature-text">AI 陪伴<br>懂心理学</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📅</div>
+        <div class="feature-text">疗愈节点<br>可视化</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon"> дневник</div>
+        <div class="feature-text">情绪记录<br>看见自己</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="startOnboarding()">开始</button>
+    <div class="welcome-foot">所有数据保存在你的浏览器，不上传任何服务器</div>
+  </div>
+
+  <!-- ========== ONBOARDING ========== -->
+  <div id="onboarding" class="screen">
+    <div class="onb-progress">
+      <div class="onb-dot active"></div>
+      <div class="onb-dot"></div>
+      <div class="onb-dot"></div>
+      <div class="onb-dot"></div>
+      <div class="onb-dot"></div>
+    </div>
+
+    <!-- Step 1: breakup date -->
+    <div class="onb-step active" data-step="1">
+      <div class="onb-q">你们是什么时候分开的？</div>
+      <div class="onb-hint">这份日期用来计算你的疗愈进度。可以填大致日期。</div>
+      <input type="date" id="q-date" class="onb-input">
+      <div class="onb-nav">
+        <button class="btn btn-primary" onclick="nextStep()">下一步</button>
+      </div>
+    </div>
+
+    <!-- Step 2: relationship length -->
+    <div class="onb-step" data-step="2">
+      <div class="onb-q">这段感情持续了多久？</div>
+      <div class="onb-hint">选一个最接近的</div>
+      <div class="onb-options" id="q-length">
+        <div class="onb-opt" data-val="lt3">不到 3 个月<small>短暂的相遇</small></div>
+        <div class="onb-opt" data-val="3to12">3-12 个月<small>刚刚建立的连接</small></div>
+        <div class="onb-opt" data-val="1to3">1-3 年<small>稳定的关系</small></div>
+        <div class="onb-opt" data-val="3to5">3-5 年<small>深入的羁绊</small></div>
+        <div class="onb-opt" data-val="gt5">5 年以上<small>生命的交集</small></div>
+      </div>
+      <div class="onb-nav">
+        <button class="btn btn-ghost" onclick="prevStep()">上一步</button>
+        <button class="btn btn-primary" onclick="nextStep()">下一步</button>
+      </div>
+    </div>
+
+    <!-- Step 3: attachment pattern -->
+    <div class="onb-step" data-step="3">
+      <div class="onb-q">前任最像哪一种？</div>
+      <div class="onb-hint">选不出来就选"不确定"——这本身也是一种答案</div>
+      <div class="onb-options" id="q-attach">
+        <div class="onb-opt" data-val="secure">安全型<small>稳定、可预测、会回应你</small></div>
+        <div class="onb-opt" data-val="anxious">焦虑型<small>需要不断确认、害怕被抛弃、粘人</small></div>
+        <div class="onb-opt" data-val="avoidant">回避型<small>保持距离、不愿深入、难以靠近</small></div>
+        <div class="onb-opt" data-val="fearful">恐惧型<small>既渴望又害怕亲密、推拉反复、消失又回来</small></div>
+        <div class="onb-opt" data-val="unsure">不确定<small>说不清，或者混合多种</small></div>
+      </div>
+      <div class="onb-nav">
+        <button class="btn btn-ghost" onclick="prevStep()">上一步</button>
+        <button class="btn btn-primary" onclick="nextStep()">下一步</button>
+      </div>
+    </div>
+
+    <!-- Step 4: who ended -->
+    <div class="onb-step" data-step="4">
+      <div class="onb-q">分手是谁提出的？</div>
+      <div class="onb-hint">这影响你创伤的类型</div>
+      <div class="onb-options" id="q-who">
+        <div class="onb-opt" data-val="them">对方提出<small>被动接受</small></div>
+        <div class="onb-opt" data-val="me">我提出<small>主动但可能仍痛苦</small></div>
+        <div class="onb-opt" data-val="mutual">共同决定<small>协商一致</small></div>
+        <div class="onb-opt" data-val="ghost">对方消失/断联<small>没有 closure</small></div>
+        <div class="onb-opt" data-val="complicated">复杂<small>反复分合，最终某一方离开</small></div>
+      </div>
+      <div class="onb-nav">
+        <button class="btn btn-ghost" onclick="prevStep()">上一步</button>
+        <button class="btn btn-primary" onclick="nextStep()">下一步</button>
+      </div>
+    </div>
+
+    <!-- Step 5: API key -->
+    <div class="onb-step" data-step="5">
+      <div class="onb-q">AI 陪伴需要 Claude API Key</div>
+      <div class="onb-hint">你的对话直接发给 Anthropic 服务器，不经过任何中间方。Key 保存在你的浏览器本地。</div>
+      <input type="password" id="q-apikey" class="onb-input" placeholder="sk-ant-..." style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:16px;">
+        没有 Key？前往 <a href="https://console.anthropic.com/" target="_blank" style="color:var(--warm);">console.anthropic.com</a> 注册。<br>
+        新账户有 $5 免费额度，足够使用数月。
+      </div>
+      <div class="onb-nav">
+        <button class="btn btn-ghost" onclick="prevStep()">上一步</button>
+        <button class="btn btn-primary" onclick="finishOnboarding()">进入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MAIN APP ========== -->
+  <div id="main" class="screen">
+    <div class="main-header">
+      <div>
+        <div class="header-title">慢慢来</div>
+        <div class="header-sub" id="header-sub">第 0 天</div>
+      </div>
+      <div class="header-nav">
+        <button class="nav-btn active" data-tab="chat" onclick="switchTab('chat')">对话</button>
+        <button class="nav-btn" data-tab="timeline" onclick="switchTab('timeline')">进度</button>
+        <button class="nav-btn" data-tab="mood" onclick="switchTab('mood')">心情</button>
+        <button class="nav-btn" data-tab="settings" onclick="switchTab('settings')">设置</button>
+      </div>
+    </div>
+
+    <!-- Chat tab -->
+    <div id="tab-chat" class="tab-content active">
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-quick" id="chat-quick">
+        <button class="quick-btn" onclick="quickSend('我今天很难受')">😢 难受</button>
+        <button class="quick-btn" onclick="quickSend('我又梦见他/她了')">💭 梦见</button>
+        <button class="quick-btn" onclick="quickSend('我想知道为什么这么痛')">🤔 为什么</button>
+        <button class="quick-btn" onclick="quickSend('我感觉今天好一点了')">🌱 好一点</button>
+        <button class="quick-btn" onclick="quickSend('我睡不着')">🌙 失眠</button>
+      </div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chat-input" rows="1" placeholder="想说什么都可以..."></textarea>
+        <button class="chat-send" id="chat-send" onclick="sendMessage()">→</button>
+      </div>
+    </div>
+
+    <!-- Timeline tab -->
+    <div id="tab-timeline" class="tab-content">
+      <div class="tl-header">
+        <div class="tl-day" id="tl-day">0</div>
+        <div class="tl-day-label">DAY</div>
+      </div>
+      <div class="tl-stage" id="tl-current-stage"></div>
+      <div class="tl-stages" id="tl-stages-list"></div>
+    </div>
+
+    <!-- Mood tab -->
+    <div id="tab-mood" class="tab-content">
+      <div class="mood-card">
+        <div class="mood-title">今天感觉怎么样？</div>
+        <div class="mood-emoji-row" id="mood-picker">
+          <div class="mood-emoji" data-mood="1">😢</div>
+          <div class="mood-emoji" data-mood="2">😔</div>
+          <div class="mood-emoji" data-mood="3">😐</div>
+          <div class="mood-emoji" data-mood="4">🙂</div>
+          <div class="mood-emoji" data-mood="5">😊</div>
+        </div>
+        <textarea class="mood-note" id="mood-note" placeholder="想写下什么吗？(可选)"></textarea>
+        <div style="margin-top:12px;text-align:right;">
+          <button class="btn btn-primary" style="padding:8px 20px;font-size:12px;" onclick="saveMood()">记录</button>
+        </div>
+      </div>
+      <div class="mood-history">
+        <div class="mood-h-title">📅 历史</div>
+        <div class="mood-list" id="mood-list"></div>
+      </div>
+    </div>
+
+    <!-- Settings tab -->
+    <div id="tab-settings" class="tab-content">
+      <div class="set-card">
+        <div class="set-title">📋 你的档案</div>
+        <div class="set-row"><div class="set-label">分手日期</div><input type="date" class="set-input" id="set-date"></div>
+        <div class="set-row"><div class="set-label">关系时长</div><div class="set-value" id="set-length">-</div></div>
+        <div class="set-row"><div class="set-label">前任类型</div><div class="set-value" id="set-attach">-</div></div>
+        <div class="set-row"><div class="set-label">谁提的分手</div><div class="set-value" id="set-who">-</div></div>
+      </div>
+      <div class="set-card">
+        <div class="set-title">🔑 API Key</div>
+        <input type="password" class="set-input" id="set-apikey" style="width:100%;margin-bottom:8px;">
+        <div class="set-warn">Key 保存在浏览器本地，不上传服务器。修改后点保存。</div>
+        <button class="btn btn-primary" style="padding:8px 20px;font-size:12px;margin-top:8px;" onclick="saveApiKey()">保存</button>
+      </div>
+      <div class="set-card">
+        <div class="set-title">⚠ 危机资源</div>
+        <div class="set-warn" style="margin-top:0;">
+          如果你正在经历严重的情绪危机，<br>
+          有自伤或自杀的想法，请联系：<br><br>
+          <strong style="color:#fff;">全国心理援助热线：400-161-9995</strong><br>
+          <strong style="color:#fff;">北京心理危机研究与干预中心：010-82951332</strong><br>
+          <strong style="color:#fff;">生命热线：400-821-1215</strong><br><br>
+          这些是 24 小时免费热线。打过去不需要说话，他们知道怎么帮你。
+        </div>
+      </div>
+      <div class="set-card">
+        <div class="set-title">🗑 数据管理</div>
+        <div class="set-warn" style="margin-top:0;margin-bottom:12px;">所有数据（档案、对话、心情）都保存在你的浏览器。清除后无法恢复。</div>
+        <button class="danger-btn" onclick="clearAllData()">清除所有数据</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ STATE ============
+const LS_KEY = 'breakup_healer_data';
+let state = {
+  setupDone: false,
+  breakupDate: null,
+  relationshipLength: null,
+  attachment: null,
+  whoEnded: null,
+  apiKey: '',
+  messages: [],
+  moods: []
+};
+
+const ATTACH_NAMES = {
+  secure:'安全型', anxious:'焦虑型', avoidant:'回避型',
+  fearful:'恐惧型', unsure:'不确定'
+};
+const LENGTH_NAMES = {
+  lt3:'不到 3 个月', '3to12':'3-12 个月', '1to3':'1-3 年',
+  '3to5':'3-5 年', gt5:'5 年以上'
+};
+const WHO_NAMES = {
+  them:'对方提出', me:'我提出', mutual:'共同决定',
+  ghost:'对方消失/断联', complicated:'复杂'
+};
+const MOOD_EMOJIS = {1:'😢',2:'😔',3:'😐',4:'🙂',5:'😊'};
+
+// ============ HEALING STAGES ============
+const STAGES = [
+  {start:0, end:14, name:'冲击期', period:'第 0-14 天',
+    desc:'最痛的阶段。否认、震惊、生理症状（失眠、食欲改变、胸痛）。这一切都是身体对"失去"的正常反应。',
+    body:'允许自己难受。不要做重大决定。能起床就是胜利。'},
+  {start:14, end:90, name:'急性期', period:'第 14-90 天',
+    desc:'反复回忆、强烈情绪波动、频繁梦见前任。大脑在全力处理创伤。',
+    body:'建立最低限度的日常结构。规律起床时间。开始允许自己有限地谈论。'},
+  {start:90, end:180, name:'缓解期', period:'第 3-6 个月',
+    desc:'痛苦仍在但不再持续。开始有"今天居然没想起"的时刻。情绪波动减弱。',
+    body:'重新连接搁置的兴趣。开始为自己做事。允许新的可能性。'},
+  {start:180, end:365, name:'慢性恢复期', period:'第 6-12 个月',
+    desc:'大部分时间不再被前任占据。偶尔的触发仍会引起反应，但能恢复。',
+    body:'思考从这段关系中学到什么。准备好的话，可以开始探索新关系。'},
+  {start:365, end:730, name:'整合期', period:'第 1-2 年',
+    desc:'回忆不再痛。能谈论这段关系像谈论一段过去的故事。开始放下。',
+    body:'这段经历成为你生命的一部分，不再是伤口。'},
+  {start:730, end:9999, name:'完成期', period:'2 年以上',
+    desc:'你成为了不一样的人。这段关系塑造了你，但不再定义你。',
+    body:'你已经走出来了。'}
+];
+
+// ============ STORAGE ============
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      const data = JSON.parse(raw);
+      state = {...state, ...data};
+    }
+  }catch(e){console.error('Load failed',e);}
+}
+function saveState(){
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+// ============ INIT ============
+loadState();
+if(state.setupDone){
+  showMain();
+}else{
+  document.getElementById('welcome').classList.add('active');
+}
+
+// ============ ONBOARDING ============
+let currentStep = 1;
+function startOnboarding(){
+  document.getElementById('welcome').classList.remove('active');
+  document.getElementById('onboarding').classList.add('active');
+  // default date
+  const today = new Date();
+  document.getElementById('q-date').value = today.toISOString().slice(0,10);
+}
+function updateProgress(){
+  document.querySelectorAll('.onb-dot').forEach((dot,i)=>{
+    dot.classList.remove('active','done');
+    if(i < currentStep-1) dot.classList.add('done');
+    else if(i === currentStep-1) dot.classList.add('active');
+  });
+  document.querySelectorAll('.onb-step').forEach(s=>{
+    s.classList.toggle('active', parseInt(s.dataset.step) === currentStep);
+  });
+}
+function nextStep(){
+  if(currentStep === 1){
+    const d = document.getElementById('q-date').value;
+    if(!d){toast('请选择日期');return;}
+    state.breakupDate = d;
+  }else if(currentStep === 2 && !state.relationshipLength){
+    toast('请选择一个选项');return;
+  }else if(currentStep === 3 && !state.attachment){
+    toast('请选择一个选项');return;
+  }else if(currentStep === 4 && !state.whoEnded){
+    toast('请选择一个选项');return;
+  }
+  if(currentStep < 5){currentStep++;updateProgress();}
+}
+function prevStep(){
+  if(currentStep > 1){currentStep--;updateProgress();}
+}
+function finishOnboarding(){
+  const key = document.getElementById('q-apikey').value.trim();
+  if(!key || !key.startsWith('sk-')){
+    toast('请输入有效的 Claude API Key');
+    return;
+  }
+  state.apiKey = key;
+  state.setupDone = true;
+  saveState();
+  showMain();
+  // Welcome message from AI
+  addAIMessage(getWelcomeMessage());
+}
+function getWelcomeMessage(){
+  const days = calcDays();
+  const stage = getCurrentStage();
+  return `你好。
+
+我知道你现在可能不知道该说什么。没关系。
+
+你已经分手 ${days} 天了，现在在「${stage.name}」。这不是一个阶段名，这是 ${stage.desc}
+
+我不会催你"想开点"，不会说"时间会冲淡一切"。
+
+你想说什么都可以。不想说也可以——只是来这里坐一会儿，也行。`;
+}
+
+// Options click
+document.querySelectorAll('#q-length .onb-opt').forEach(opt=>{
+  opt.onclick = ()=>{
+    document.querySelectorAll('#q-length .onb-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    state.relationshipLength = opt.dataset.val;
+  };
+});
+document.querySelectorAll('#q-attach .onb-opt').forEach(opt=>{
+  opt.onclick = ()=>{
+    document.querySelectorAll('#q-attach .onb-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    state.attachment = opt.dataset.val;
+  };
+});
+document.querySelectorAll('#q-who .onb-opt').forEach(opt=>{
+  opt.onclick = ()=>{
+    document.querySelectorAll('#q-who .onb-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    state.whoEnded = opt.dataset.val;
+  };
+});
+
+// ============ MAIN APP ============
+function showMain(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('main').classList.add('active');
+  updateHeader();
+  renderTimeline();
+  renderMoodList();
+  renderSettings();
+  renderMessages();
+}
+function updateHeader(){
+  const d = calcDays();
+  document.getElementById('header-sub').textContent = `第 ${d} 天`;
+}
+function calcDays(){
+  if(!state.breakupDate) return 0;
+  const bd = new Date(state.breakupDate);
+  const now = new Date();
+  return Math.max(0, Math.floor((now - bd) / 86400000));
+}
+function getCurrentStage(){
+  const d = calcDays();
+  return STAGES.find(s => d >= s.start && d < s.end) || STAGES[STAGES.length-1];
+}
+function switchTab(tab){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(tab === 'timeline'){renderTimeline();}
+  if(tab === 'mood'){renderMoodList();}
+}
+
+// ============ TIMELINE ============
+function renderTimeline(){
+  const d = calcDays();
+  const stage = getCurrentStage();
+  document.getElementById('tl-day').textContent = d;
+  document.getElementById('tl-current-stage').innerHTML = `
+    <div class="tl-stage-name">${stage.name}</div>
+    <div class="tl-stage-desc">${stage.desc}<br><br><strong style="color:var(--warm);">建议：</strong>${stage.body}</div>
+  `;
+  const list = document.getElementById('tl-stages-list');
+  list.innerHTML = STAGES.map(s=>{
+    const isDone = d >= s.end;
+    const isCurrent = d >= s.start && d < s.end;
+    return `<div class="tl-stage-item ${isDone?'done':''} ${isCurrent?'current':''}">
+      <div class="tl-stage-period">${s.period}</div>
+      <div class="tl-stage-title">${s.name}</div>
+      <div class="tl-stage-body">${s.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============ MOOD ============
+let selectedMood = null;
+document.querySelectorAll('#mood-picker .mood-emoji').forEach(e=>{
+  e.onclick = ()=>{
+    document.querySelectorAll('#mood-picker .mood-emoji').forEach(x=>x.classList.remove('selected'));
+    e.classList.add('selected');
+    selectedMood = parseInt(e.dataset.mood);
+  };
+});
+function saveMood(){
+  if(!selectedMood){toast('选一个表情吧');return;}
+  const note = document.getElementById('mood-note').value.trim();
+  const entry = {
+    date: new Date().toISOString(),
+    mood: selectedMood,
+    note: note
+  };
+  state.moods.unshift(entry);
+  saveState();
+  renderMoodList();
+  document.getElementById('mood-note').value = '';
+  document.querySelectorAll('#mood-picker .mood-emoji').forEach(x=>x.classList.remove('selected'));
+  selectedMood = null;
+  toast('已记录 💚');
+}
+function renderMoodList(){
+  const list = document.getElementById('mood-list');
+  if(state.moods.length === 0){
+    list.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px;">还没有记录</div>';
+    return;
+  }
+  list.innerHTML = state.moods.map(m=>{
+    const d = new Date(m.date);
+    const dateStr = `${d.getMonth()+1}月${d.getDate()}日 ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+    return `<div class="mood-item">
+      <div class="mood-item-emoji">${MOOD_EMOJIS[m.mood]}</div>
+      <div class="mood-item-note">${m.note || '<span style="color:var(--text3);">无备注</span>'}</div>
+      <div class="mood-item-date">${dateStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============ SETTINGS ============
+function renderSettings(){
+  document.getElementById('set-date').value = state.breakupDate || '';
+  document.getElementById('set-length').textContent = LENGTH_NAMES[state.relationshipLength] || '-';
+  document.getElementById('set-attach').textContent = ATTACH_NAMES[state.attachment] || '-';
+  document.getElementById('set-who').textContent = WHO_NAMES[state.whoEnded] || '-';
+  document.getElementById('set-apikey').value = state.apiKey || '';
+}
+function saveApiKey(){
+  const k = document.getElementById('set-apikey').value.trim();
+  if(!k.startsWith('sk-')){toast('Key 格式不对');return;}
+  state.apiKey = k;
+  saveState();
+  toast('已保存');
+}
+
+// ============ CHAT ============
+function renderMessages(){
+  const box = document.getElementById('chat-messages');
+  box.innerHTML = '';
+  state.messages.forEach(m=>{
+    if(m.role === 'user') addUserMessage(m.content, false);
+    else addAIMessageDOM(m.content, false);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+function addUserMessage(text, save=true){
+  const box = document.getElementById('chat-messages');
+  const now = new Date();
+  const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  const div = document.createElement('div');
+  div.className = 'msg me';
+  div.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div><div class="msg-time">${time}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  if(save){
+    state.messages.push({role:'user', content:text});
+    saveState();
+  }
+}
+function addAIMessage(text, save=true){
+  addAIMessageDOM(text, save);
+  if(save){
+    state.messages.push({role:'assistant', content:text});
+    saveState();
+  }
+}
+function addAIMessageDOM(text, save){
+  const box = document.getElementById('chat-messages');
+  const now = new Date();
+  const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div><div class="msg-time">${time}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function showTyping(){
+  const box = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-typing';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function hideTyping(){
+  const t = document.getElementById('typing-indicator');
+  if(t) t.remove();
+}
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function sendMessage(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  if(!state.apiKey){toast('请先设置 API Key');switchTab('settings');return;}
+
+  addUserMessage(text);
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Crisis detection
+  if(isCrisis(text)){
+    addAIMessage(getCrisisResponse());
+    return;
+  }
+
+  showTyping();
+  try{
+    const reply = await callClaude(text);
+    hideTyping();
+    addAIMessage(reply);
+  }catch(e){
+    hideTyping();
+    addAIMessage('我连接服务器时出了问题。你的话我收到了，但暂时回不了。可以等一下再试。\n\n错误：'+e.message);
+  }
+}
+function quickSend(text){
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+document.getElementById('chat-input').addEventListener('input', function(){
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+document.getElementById('chat-input').addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+function isCrisis(text){
+  const t = text.toLowerCase();
+  const keywords = ['不想活','不想活了','想死','自杀','了结','解脱','活着没意思','跳下去','结束生命','了断','毫无意义'];
+  return keywords.some(k => text.includes(k));
+}
+function getCrisisResponse(){
+  return `我看到你说的了。我想停下来认真问你几句。
+
+你现在是有具体的计划，还是只是非常非常累？
+
+不管哪一种，你都不需要一个人扛。这些话很难跟身边的人说，我理解。但有些电话是专门为这种时刻准备的——
+
+📞 全国心理援助热线：400-161-9995
+📞 北京心理危机研究与干预中心：010-82951332
+📞 生命热线：400-821-1215
+
+24 小时，免费，匿名。打过去不需要组织好语言，说"我现在很难受"就够了。
+
+你愿意继续和我聊也可以。我就在这里。`;
+}
+
+// ============ CLAUDE API ============
+async function callClaude(userMessage){
+  const systemPrompt = buildSystemPrompt();
+  // Build message history (last 10 turns)
+  const recent = state.messages.slice(-10).map(m=>({
+    role: m.role,
+    content: m.content
+  }));
+  recent.push({role:'user', content:userMessage});
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': state.apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({
+      model:'claude-3-5-sonnet-20241022',
+      max_tokens:1024,
+      system: systemPrompt,
+      messages: recent
+    })
+  });
+  if(!res.ok){
+    const err = await res.text();
+    throw new Error(`API ${res.status}: ${err.slice(0,200)}`);
+  }
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+function buildSystemPrompt(){
+  const d = calcDays();
+  const stage = getCurrentStage();
+  const attachName = ATTACH_NAMES[state.attachment] || '未知';
+  const lengthName = LENGTH_NAMES[state.relationshipLength] || '未知';
+  const whoName = WHO_NAMES[state.whoEnded] || '未知';
+
+  return `你是一个专业的分手疗愈陪伴 AI，名叫"慢慢来"。
+
+# 用户档案
+- 分手天数：${d} 天
+- 关系时长：${lengthName}
+- 前任依恋类型：${attachName}
+- 分手提出方：${whoName}
+
+# 当前疗愈阶段：${stage.name}（${stage.period}）
+${stage.desc}
+
+# 你的核心原则
+
+1. **不要说废话**。永远不要说"时间会冲淡一切"、"想开点"、"放下吧"、"向前看"。这些话没用，会让用户更孤独。
+
+2. **个性化**。基于用户的档案和当前阶段回应，不要给通用建议。如果用户是恐惧型前任+被动分手+第30天，回应要针对这个具体情况。
+
+3. **先共情，再分析**。用户说"我难受"，不要先解释为什么难受。先承认"难受是真的"，再慢慢展开。
+
+4. **简短**。每次回复不超过 150 字。不要写长段落。用户在痛苦中，长文字会让他们更累。
+
+5. **用"你"称呼用户**。不要用"我们"、"大家"。直接、私人。
+
+6. **不要催促行动**。不要说"你应该..."。可以说"你可以试试..."或者只描述现象。
+
+7. **识别危机**。如果用户表达自伤/自杀意图，立即提供热线电话（全国心理援助热线 400-161-9995、北京危机干预 010-82951332、生命热线 400-821-1215），并温和地询问"你有具体计划吗？身边有人吗？"
+
+8. **不鼓励复合**。即使前任回来了，也不要建议复合。陪伴用户的痛苦，但不替用户做决定。
+
+9. **不鼓励"忘记"**。不要说"忘记ta吧"。要承认这段经历是真实的。
+
+10. **基于心理学框架**。隐性使用：
+- 依恋理论（安全型/焦虑型/回避型/恐惧型）
+- 哀悼周期（否认→愤怒→讨价还价→抑郁→接受）
+- 创伤后应激反应（警觉、闪回、回避）
+- 双相/抑郁的区分（但不做诊断）
+
+11. **承认复杂性**。感情不是非黑即白。用户可以同时想念前任和知道不该回去。这种矛盾是正常的。
+
+12. **中文，自然口语**。不要书面化，不要官方腔。像一个懂心理学的、经历过这些事的朋友。
+
+# 你不是什么
+- 你不是医生，不能诊断或开药
+- 你不能替代专业心理咨询
+- 你不评判用户，也不评判前任
+- 你不催用户"好起来"
+
+现在，回应用户。简短、温暖、懂心理学。`;
+}
+
+// ============ DATA CLEAR ============
+function clearAllData(){
+  if(!confirm('确定清除所有数据？包括你的档案、对话记录、心情记录。无法恢复。')) return;
+  if(!confirm('再次确认？这将清空一切。')) return;
+  localStorage.removeItem(LS_KEY);
+  location.reload();
+}
+
+// ============ TOAST ============
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+// Enter to send (already added above)
+
+// ============ DAILY HEADER UPDATE ============
+setInterval(updateHeader, 60000);
+</script>
+
+</body>
+</html>
