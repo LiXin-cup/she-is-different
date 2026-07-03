@@ -297,7 +297,7 @@ body{
       <div class="onb-q">准备好了吗？</div>
       <div class="onb-hint" style="margin-bottom:16px;">基础陪伴功能完全免费，不需要注册，不需要 API Key。你的数据只存在浏览器本地。</div>
       <div style="font-size:11px;color:var(--text3);line-height:1.7;margin-bottom:16px;">
-        💡 如果想要更深度的 AI 对话（可选），可以在「设置」中填入 API Key。<br>
+        💡 如果想要更深度的 AI 对话，可以在「设置」中填入 DeepSeek API Key（推荐，注册送10元）。<br>
         不填也能正常使用——内置的本地陪伴引擎已经覆盖了分手疗愈的核心场景。
       </div>
       <div class="onb-nav">
@@ -380,9 +380,13 @@ body{
         <div class="set-row"><div class="set-label">谁提的分手</div><div class="set-value" id="set-who">-</div></div>
       </div>
       <div class="set-card">
-        <div class="set-title">🔑 API Key</div>
-        <input type="password" class="set-input" id="set-apikey" style="width:100%;margin-bottom:8px;">
-        <div class="set-warn">Key 保存在浏览器本地，不上传服务器。修改后点保存。</div>
+        <div class="set-title">🔑 API Key（深度 AI 对话）</div>
+        <input type="password" class="set-input" id="set-apikey" style="width:100%;margin-bottom:8px;" placeholder="sk-... （DeepSeek 或 Claude）">
+        <div class="set-warn" style="margin-top:0;font-size:11px;line-height:1.8;">
+          推荐 <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:var(--warm);">DeepSeek</a>（注册送10元，约1分钱/次）<br>
+          也支持 <a href="https://console.anthropic.com/" target="_blank" style="color:var(--warm);">Claude</a>（sk-ant- 开头）<br>
+          不填则使用内置本地引擎。Key 保存在浏览器本地，不上传。
+        </div>
         <button class="btn btn-primary" style="padding:8px 20px;font-size:12px;margin-top:8px;" onclick="saveApiKey()">保存</button>
       </div>
       <div class="set-card">
@@ -770,7 +774,7 @@ async function sendMessage(){
   // 有API Key → 使用云端AI
   showTyping();
   try{
-    const reply = await callClaude(text);
+    const reply = await callAI(text);
     hideTyping();
     addAIMessage(reply);
   }catch(e){
@@ -922,7 +926,59 @@ ${days < 30 ? '前30天愤怒是最强烈的阶段——你付出了9.5，她给
 }
 
 // ============ API 调用（可选） ============
-async function callClaude(userMessage){
+async function callAI(userMessage){
+  const systemPrompt = buildSystemPrompt();
+  const recent = state.messages.slice(-10).map(m=>({
+    role: m.role,
+    content: m.content
+  }));
+  recent.push({role:'user', content:userMessage});
+
+  // 如果有 DeepSeek key 优先用
+  if(state.apiKey && state.apiKey.startsWith('sk-')){
+    // DeepSeek API (OpenAI compatible)
+    const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${state.apiKey}`
+      },
+      body: JSON.stringify({
+        model:'deepseek-chat',
+        messages:[{role:'system',content:systemPrompt}, ...recent],
+        max_tokens:1024,
+        temperature:0.8,
+      })
+    });
+    if(!res.ok){throw new Error(`DeepSeek ${res.status}`);}
+    const data = await res.json();
+    return data.choices[0].message.content;
+  }
+
+  // 如果有 Claude key
+  if(state.apiKey && state.apiKey.startsWith('sk-ant-')){
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': state.apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-3-5-sonnet-20241022',
+        max_tokens:1024,
+        system:systemPrompt,
+        messages:recent
+      })
+    });
+    if(!res.ok){const err=await res.text();throw new Error(`API ${res.status}: ${err.slice(0,200)}`);}
+    const data = await res.json();
+    return data.content[0].text;
+  }
+
+  throw new Error('No valid API key');
+}
   const systemPrompt = buildSystemPrompt();
   // Build message history (last 10 turns)
   const recent = state.messages.slice(-10).map(m=>({
