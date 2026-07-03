@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心理诊断 · 她不一样</title>
+<style>
+:root{--bg:#0a0a0f;--card:#12121a;--card2:#1a1a26;--border:#2a2a3a;--green:#2ecc71;--blue:#3498db;--pink:#fd79a8;--red:#e74c3c;--purple:#6c5ce7;--orange:#e67e22;--yellow:#f1c40f;--text:#e0e0e0;--text2:#999;--text3:#666;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'PingFang SC',sans-serif;line-height:1.8;-webkit-font-smoothing:antialiased;min-height:100vh;}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 60px;}
+.back{display:inline-block;font-size:13px;color:var(--text2);text-decoration:none;margin-bottom:20px;padding:6px 14px;background:var(--card);border-radius:20px;border:1px solid var(--border);}
+.hero{text-align:center;padding:16px 0 24px;}
+.hero-title{font-size:24px;font-weight:300;color:#fff;letter-spacing:2px;}
+.hero-sub{font-size:13px;color:var(--text2);margin-top:6px;}
+.page{display:none;}.page.active{display:block;}
+.scale-card{background:var(--card);border-radius:14px;padding:20px;margin-bottom:14px;border:1px solid var(--border);cursor:pointer;transition:all .25s;}
+.scale-card:hover{border-color:var(--green);transform:translateY(-2px);}
+.scale-card.done{border-color:var(--green);opacity:.7;}
+.scale-tag{font-size:10px;letter-spacing:2px;padding:3px 10px;border-radius:10px;font-weight:600;display:inline-block;margin-bottom:8px;}
+.scale-title{font-size:16px;font-weight:600;color:#fff;}
+.scale-desc{font-size:13px;color:var(--text2);margin-top:4px;}
+.scale-meta{font-size:11px;color:var(--text3);margin-top:8px;}
+.scale-score{float:right;font-size:22px;font-weight:700;}
+.progress{height:4px;background:var(--border);border-radius:2px;margin:16px 0;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:2px;transition:width .3s;}
+.q-card{background:var(--card);border-radius:14px;padding:24px 20px;border:1px solid var(--border);}
+.q-num{font-size:11px;color:var(--green);margin-bottom:8px;}
+.q-text{font-size:16px;color:#fff;margin-bottom:18px;line-height:1.6;}
+.q-opts{display:flex;flex-direction:column;gap:8px;}
+.q-opt{padding:12px 16px;background:var(--card2);border:1px solid var(--border);border-radius:10px;font-size:14px;cursor:pointer;transition:all .15s;text-align:center;}
+.q-opt:hover{border-color:var(--green);}
+.q-opt.selected{background:var(--green);color:#000;border-color:var(--green);font-weight:600;}
+.result-card{background:var(--card);border-radius:14px;padding:24px;margin-bottom:16px;border:1px solid var(--border);}
+.result-score{text-align:center;padding:20px 0;}
+.score-num{font-size:48px;font-weight:800;}
+.score-level{font-size:18px;font-weight:600;margin-top:6px;}
+.score-hint{font-size:13px;color:var(--text2);margin-top:8px;}
+.dim-bar{height:24px;background:var(--border);border-radius:6px;margin:6px 0;overflow:hidden;position:relative;}
+.dim-fill{height:100%;border-radius:6px;transition:width .8s;}
+.dim-label{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:#fff;z-index:1;}
+.dim-score{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#fff;z-index:1;}
+.crisis-box{background:rgba(231,76,60,.1);border:2px solid var(--red);border-radius:14px;padding:20px;margin:16px 0;}
+.crisis-box h3{color:var(--red);font-size:15px;}
+.crisis-box p{font-size:13px;color:var(--text2);margin-top:8px;line-height:2;}
+.btn{display:block;width:100%;padding:14px;border-radius:30px;font-size:15px;font-weight:600;cursor:pointer;border:none;text-align:center;margin-top:12px;transition:all .2s;text-decoration:none;}
+.btn-go{background:linear-gradient(135deg,var(--green),var(--blue));color:#000;}
+.btn-secondary{background:var(--card2);color:var(--text2);border:1px solid var(--border);}
+.nav-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;}
+.nav-links a{display:inline-block;padding:10px 24px;border-radius:30px;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:13px;text-decoration:none;}
+.warning{text-align:center;font-size:11px;color:var(--text3);padding:16px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 工具箱</a>
+  <div class="hero">
+    <div class="hero-title">🏥 心理诊断</div>
+    <div class="hero-sub">PHQ-9 · GAD-7 · MDQ · DASS-21 · PCL-5</div>
+  </div>
+
+  <!-- Menu Page -->
+  <div id="menu" class="page active">
+    <div style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:20px;border-left:3px solid var(--green);">
+      <p style="font-size:13px;color:var(--text2);">选择需要做的量表。做完后自动生成综合报告。建议从 PHQ-9（抑郁）开始。</p>
+    </div>
+
+    <div class="scale-card" id="card-phq9" onclick="startScale('phq9')">
+      <span class="scale-tag" style="background:rgba(46,204,113,.15);color:var(--green);">推荐首选</span>
+      <div class="scale-title">PHQ-9 抑郁筛查</div>
+      <div class="scale-desc">过去两周的抑郁症状严重度</div>
+      <div class="scale-meta">9题 · 约3分钟 · DSM-IV标准</div>
+    </div>
+
+    <div class="scale-card" id="card-gad7" onclick="startScale('gad7')">
+      <span class="scale-tag" style="background:rgba(52,152,219,.15);color:var(--blue);">焦虑</span>
+      <div class="scale-title">GAD-7 焦虑筛查</div>
+      <div class="scale-desc">过去两周的广泛性焦虑症状</div>
+      <div class="scale-meta">7题 · 约2分钟 · Spitzer 2006</div>
+    </div>
+
+    <div class="scale-card" id="card-mdq" onclick="startScale('mdq')">
+      <span class="scale-tag" style="background:rgba(231,76,60,.15);color:var(--red);">双相筛查</span>
+      <div class="scale-title">MDQ 双相情感障碍筛查</div>
+      <div class="scale-desc">筛查双相Ⅱ型（最常被误诊为单相抑郁）</div>
+      <div class="scale-meta">13题 · 约4分钟 · Hirschfeld 2000</div>
+    </div>
+
+    <div class="scale-card" id="card-dass21" onclick="startScale('dass21')">
+      <span class="scale-tag" style="background:rgba(108,92,231,.15);color:var(--purple);">综合</span>
+      <div class="scale-title">DASS-21 抑郁·焦虑·压力</div>
+      <div class="scale-desc">三合一综合筛查，一次测三个维度</div>
+      <div class="scale-meta">21题 · 约7分钟 · Lovibond 1995</div>
+    </div>
+
+    <div class="scale-card" id="card-pcl5" onclick="startScale('pcl5')">
+      <span class="scale-tag" style="background:rgba(230,126,34,.15);color:var(--orange);">PTSD</span>
+      <div class="scale-title">PCL-5 PTSD 筛查</div>
+      <div class="scale-desc">创伤后应激障碍症状（适合经历重大事件后）</div>
+      <div class="scale-meta">20题 · 约7分钟 · DSM-5标准</div>
+    </div>
+
+    <div id="report-btn-area" style="display:none;margin-top:20px;">
+      <button class="btn btn-go" onclick="showReport()">📊 生成综合报告</button>
+    </div>
+
+    <div class="warning">
+      ⚠️ 本工具仅供自我筛查参考，不构成医学诊断<br>
+      如果分数提示中重度，请尽快前往精神科就诊<br>
+      全国心理援助热线：400-161-9995
+    </div>
+  </div>
+
+  <!-- Quiz Page -->
+  <div id="quiz" class="page">
+    <div class="progress"><div class="progress-bar" id="bar" style="width:0%"></div></div>
+    <div class="q-card" id="q-area"></div>
+  </div>
+
+  <!-- Result Page -->
+  <div id="result" class="page">
+    <div id="result-content"></div>
+    <div class="nav-links">
+      <a href="index.html">← 返回工具箱</a>
+      <a href="attachment-test.html">🧠 测依恋类型</a>
+      <a href="quiz.html">🔍 关系诊断</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ Scale Definitions ═══
+const scales = {
+  phq9: {
+    name: 'PHQ-9 抑郁筛查',
+    instruction: '过去两周内，你有多经常受到以下问题的困扰？',
+    opts: ['完全没有','好几天','超过一半的天数','几乎每天'],
+    questions: [
+      '做事时提不起劲或没有兴趣',
+      '感到心情低落、沮丧或绝望',
+      '入睡困难、睡不安稳或睡眠过多',
+      '感觉疲倦或没有活力',
+      '食欲不振或吃得太多',
+      '觉得自己很糟糕，或觉得自己很失败，或让自己/家人失望了',
+      '对事物专注有困难，例如阅读报纸或看电视时',
+      '动作或说话速度缓慢到让别人察觉；或正好相反，烦躁或坐立不安',
+      '有不如死掉或用某种方式伤害自己的念头',
+    ],
+    levels: [
+      {max:4,name:'无抑郁',color:'var(--green)',hint:'当前没有明显的抑郁症状'},
+      {max:9,name:'轻度抑郁',color:'var(--yellow)',hint:'建议关注情绪状态，定期自测'},
+      {max:14,name:'中度抑郁',color:'var(--orange)',hint:'建议寻求心理咨询'},
+      {max:19,name:'中重度抑郁',color:'var(--red)',hint:'强烈建议尽快前往精神科就诊'},
+      {max:27,name:'重度抑郁',color:'var(--red)',hint:'请尽快前往精神科就诊，不要拖延'},
+    ],
+  },
+  gad7: {
+    name: 'GAD-7 焦虑筛查',
+    instruction: '过去两周内，你有多经常受到以下问题的困扰？',
+    opts: ['完全没有','好几天','超过一半的天数','几乎每天'],
+    questions: [
+      '感到紧张、焦虑或急躁',
+      '无法停止或控制担忧',
+      '对各种各样的事情担忧过多',
+      '很难放松下来',
+      '坐立不安，很难安静下来',
+      '容易心烦或易怒',
+      '感到害怕，好像有可怕的事要发生',
+    ],
+    levels: [
+      {max:4,name:'无焦虑',color:'var(--green)',hint:'当前没有明显的焦虑症状'},
+      {max:9,name:'轻度焦虑',color:'var(--yellow)',hint:'建议学习放松技巧，定期自测'},
+      {max:14,name:'中度焦虑',color:'var(--orange)',hint:'建议寻求心理咨询'},
+      {max:21,name:'重度焦虑',color:'var(--red)',hint:'强烈建议尽快前往精神科就诊'},
+    ],
+  },
+  mdq: {
+    name: 'MDQ 双相情感障碍筛查',
+    instruction: '请回忆你一生中是否曾经有过以下情况（哪怕只有一次）：',
+    opts: ['是','否'],
+    questions: [
+      '你感到非常好或非常开心——不同于平常的你',
+      '你比平常更急躁，一碰就发火',
+      '你比平常更有自信',
+      '你睡眠需求减少（比如只睡3小时也不累）',
+      '你说话比平常更多或更快',
+      '你思维奔逸，脑子里想法一个接一个',
+      '你很容易被外界事物分散注意力',
+      '你的精力比平常旺盛得多',
+      '你花了很多钱，做了事后后悔的事',
+      '你社交活动比平常多得多',
+      '你性欲比平常强得多',
+      '你比平常更有创造力',
+      '你觉得自己无所不能',
+    ],
+    // MDQ scoring: Part 1 = count of "yes", Part 2 = severity, Part 3 = impairment
+    // Simplified: count yes, if >=7 + impairment = positive screen
+    levels: [
+      {max:3,name:'阴性',color:'var(--green)',hint:'目前没有双相情感障碍的明显迹象'},
+      {max:6,name:'需关注',color:'var(--yellow)',hint:'部分躁狂特征，建议精神科进一步评估'},
+      {max:13,name:'阳性',color:'var(--red)',hint:'双相情感障碍筛查阳性！请务必前往精神科确诊，双相Ⅱ型常被误诊为单相抑郁'},
+    ],
+    note: 'MDQ阳性不代表确诊双相，但提示需要专业评估。双相Ⅱ型（轻躁狂+抑郁）被误诊为单相抑郁的概率是30-50%。',
+  },
+  dass21: {
+    name: 'DASS-21 综合筛查',
+    instruction: '请根据过去一周内每个陈述与你情况的符合程度选择：',
+    opts: ['不符合','有些符合','多数符合','完全符合'],
+    questions: [
+      '我感到紧张',
+      '我感到干燥感（口干）',
+      '我体验不到积极的感受',
+      '我感到呼吸困难（气促、窒息感）',
+      '我觉得自己无法主动做事',
+      '我对事情反应过度',
+      '我感到颤抖（如手抖）',
+      '我觉得自己耗尽了精力',
+      '我担心可能恐慌发作的情境',
+      '我觉得自己没有什么可期待的',
+      '我发现自己容易激动',
+      '我感到很难放松',
+      '我感到沮丧和忧郁',
+      '我无法忍受阻碍我继续做事的事情',
+      '我感到快要恐慌了',
+      '我对自己失去热情',
+      '我觉得自己没什么价值',
+      '我发现自己连一点点小事都很敏感',
+      '我觉得自己接近恐慌',
+      '我的心跳很快',
+      '我感到害怕但没有原因',
+    ],
+    // DASS-21: items 1,6,8,11,12,14,18 = stress; 2,4,7,9,15,19,20 = anxiety; 3,5,10,13,16,17,21 = depression
+    // Scores multiplied by 2 for DASS-42 equivalent
+    subscales: {
+      depression: [2,4,9,12,15,16,20],
+      anxiety: [1,3,7,8,14,18,19],
+      stress: [0,5,7,10,11,13,17],
+    },
+    levels: {
+      depression: [
+        {max:9,name:'正常',color:'var(--green)'},
+        {max:13,name:'轻度',color:'var(--yellow)'},
+        {max:20,name:'中度',color:'var(--orange)'},
+        {max:27,name:'重度',color:'var(--red)'},
+        {max:42,name:'极重度',color:'var(--red)'},
+      ],
+      anxiety: [
+        {max:7,name:'正常',color:'var(--green)'},
+        {max:9,name:'轻度',color:'var(--yellow)'},
+        {max:14,name:'中度',color:'var(--orange)'},
+        {max:19,name:'重度',color:'var(--red)'},
+        {max:42,name:'极重度',color:'var(--red)'},
+      ],
+      stress: [
+        {max:14,name:'正常',color:'var(--green)'},
+        {max:18,name:'轻度',color:'var(--yellow)'},
+        {max:25,name:'中度',color:'var(--orange)'},
+        {max:33,name:'重度',color:'var(--red)'},
+        {max:42,name:'极重度',color:'var(--red)'},
+      ],
+    },
+  },
+  pcl5: {
+    name: 'PCL-5 PTSD 筛查',
+    instruction: '下面是一系列人们在遇到压力性生活事件（如事故、被攻击、自然灾害、突然丧亲）后可能有的一些问题。请根据过去一个月的情况回答：',
+    opts: ['完全没有','轻微','中度','相当严重','极其严重'],
+    questions: [
+      '反复出现关于那次压力事件的令人不安的记忆',
+      '反复出现关于那次事件的令人不安的梦',
+      '突然感觉或好像那次事件正在重演',
+      '当某事提醒你那次事件时，感到非常难受',
+      '当某事提醒你那次事件时，出现强烈的身体反应（心跳加速、出汗等）',
+      '回避与那次事件有关的记忆、想法或感受',
+      '回避那些让你想起那次事件的外部提醒物（人、地方、对话、活动）',
+      '记不清那次事件的重要部分',
+      '对自己、他人或世界有强烈的负面看法',
+      '因为事件而责怪自己或他人',
+      '感到持久的负面情绪（恐惧、愤怒、内疚、羞耻）',
+      '对以前喜欢的活动失去兴趣',
+      '感觉与他人疏远或隔绝',
+      '难以体验积极情绪（如快乐、满足）',
+      '容易发怒或对人大吼',
+      '做过冒险或可能伤害自己的事情',
+      '处于高度警觉状态（"紧张"、警惕）',
+      '容易受惊吓',
+      '难以集中注意力',
+      '难以入睡或睡不好',
+    ],
+    levels: [
+      {max:10,name:'低风险',color:'var(--green)',hint:'当前没有明显的PTSD症状'},
+      {max:20,name:'轻度',color:'var(--yellow)',hint:'存在一些创伤后症状，建议关注'},
+      {max:30,name:'中度',color:'var(--orange)',hint:'建议寻求创伤聚焦心理治疗'},
+      {max:80,name:'重度',color:'var(--red)',hint:'强烈建议精神科或心理科就诊'},
+    ],
+    cutoff: 31,
+    note: 'PCL-5临床截断值为31分。≥31分提示PTSD可能性较高，需要专业评估。',
+  },
+};
+
+// ═══ State ═══
+let results = {}; // {phq9: {score, level}, gad7: {...}, ...}
+let currentScale = null;
+let qIdx = 0;
+let answers = [];
+
+// ═══ Logic ═══
+function startScale(key) {
+  if (results[key]) {
+    if (!confirm('你已经做过这个量表了，要重新做吗？')) return;
+  }
+  currentScale = key;
+  qIdx = 0;
+  answers = [];
+  const s = scales[key];
+  document.getElementById('menu').classList.remove('active');
+  document.getElementById('quiz').classList.add('active');
+  renderQ();
+}
+
+function renderQ() {
+  const s = scales[currentScale];
+  document.getElementById('bar').style.width = (qIdx / s.questions.length * 100) + '%';
+  if (qIdx >= s.questions.length) { finishScale(); return; }
+  document.getElementById('q-area').innerHTML = `
+    <div class="q-num">${s.name} · 第 ${qIdx + 1} / ${s.questions.length} 题</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">${s.instruction}</div>
+    <div class="q-text">${s.questions[qIdx]}</div>
+    <div class="q-opts" id="opts">
+      ${s.opts.map((o, i) => `<div class="q-opt" onclick="pick(${i})">${o}</div>`).join('')}
+    </div>
+  `;
+}
+
+function pick(i) {
+  answers[qIdx] = i;
+  document.querySelectorAll('#opts .q-opt').forEach((o, idx) => { if (idx === i) o.classList.add('selected'); });
+  setTimeout(() => { qIdx++; renderQ(); }, 180);
+}
+
+function finishScale() {
+  const s = scales[currentScale];
+  let html = '<div id="result-content"></div>';
+
+  if (currentScale === 'dass21') {
+    // Multi-subscale
+    let subs = scales.dass21.subscales;
+    let subResults = {};
+    for (let subName of ['depression','anxiety','stress']) {
+      let indices = subs[subName];
+      let sum = indices.reduce((acc, idx) => acc + (answers[idx] || 0), 0);
+      let score = sum * 2; // ×2 for DASS-42 equivalent
+      let level = scales.dass21.levels[subName].find(l => score <= l.max) || scales.dass21.levels[subName][scales.dass21.levels[subName].length-1];
+      subResults[subName] = { score, level };
+    }
+    results[currentScale] = subResults;
+    document.getElementById('quiz').classList.remove('active');
+    document.getElementById('result').classList.add('active');
+
+    let subLabels = {depression:'抑郁',anxiety:'焦虑',stress:'压力'};
+    let h = `<div class="result-card"><h3 style="color:var(--green);margin-bottom:16px;">DASS-21 综合报告</h3>`;
+    for (let subName of ['depression','anxiety','stress']) {
+      let r = subResults[subName];
+      let pct = Math.min(100, r.score / 42 * 100);
+      h += `
+        <div style="margin-bottom:16px;">
+          <div style="font-size:14px;margin-bottom:4px;">${subLabels[subName]}：${r.score}分 — <span style="color:${r.level.color};font-weight:600;">${r.level.name}</span></div>
+          <div class="dim-bar"><div class="dim-fill" style="width:${pct}%;background:${r.level.color};"></div>
+          <span class="dim-label">${subLabels[subName]}</span><span class="dim-score">${r.score}/42</span></div>
+        </div>`;
+    }
+    h += '</div>';
+    document.getElementById('result-content').outerHTML = `<div id="result-content">${h}</div>`;
+  } else {
+    let score;
+    if (currentScale === 'mdq') {
+      score = answers.filter(a => a === 1 || a === 0 && answers[0] !== undefined).length;
+      // MDQ: count "yes" (option index 0 = "是")
+      score = answers.filter(a => a === 0).length;
+    } else {
+      score = answers.reduce((a, b) => a + b, 0);
+    }
+    let level = s.levels.find(l => score <= l.max) || s.levels[s.levels.length - 1];
+    results[currentScale] = { score, level };
+
+    document.getElementById('quiz').classList.remove('active');
+    document.getElementById('result').classList.add('active');
+
+    let pct = Math.min(100, score / (s.levels[s.levels.length - 1].max) * 100);
+    let h = `<div class="result-card">
+      <div class="result-score">
+        <div class="score-num" style="color:${level.color}">${score}</div>
+        <div class="score-level" style="color:${level.color}">${level.name}</div>
+        <div class="score-hint">${level.hint || ''}</div>
+      </div>`;
+    if (s.note) {
+      h += `<div style="background:var(--card2);border-radius:10px;padding:14px;margin-top:16px;"><p style="font-size:12px;color:var(--text2);">${s.note}</p></div>`;
+    }
+    // Crisis check for PHQ-9 question 9 (suicidal ideation)
+    if (currentScale === 'phq9' && answers[8] >= 1) {
+      h += `<div class="crisis-box">
+        <h3>⚠️ 自杀风险提示</h3>
+        <p>你在第9题（自伤/自杀念头）选择了"${s.opts[answers[8]]}"。<br>请认真对待这个信号。<br><br>
+        <b>全国心理援助热线</b>：400-161-9995<br>
+        <b>北京心理危机研究与干预中心</b>：010-82951332<br>
+        <b>生命热线</b>：400-821-1215<br><br>
+        如果你有具体的自伤计划或冲动，请立即拨打120或前往最近的医院急诊。</p>
+      </div>`;
+    }
+    h += '</div>';
+    document.getElementById('result-content').outerHTML = `<div id="result-content">${h}</div>`;
+  }
+
+  // Mark card as done
+  let card = document.getElementById('card-' + currentScale);
+  if (card) {
+    card.classList.add('done');
+    let r = results[currentScale];
+    let scoreText = currentScale === 'dass21'
+      ? Object.values(r).map(x => x.score).join('/')
+      : r.score;
+    card.querySelector('.scale-title').innerHTML += ` <span style="color:var(--green);float:right;">✓ ${scoreText}分</span>`;
+  }
+
+  // Show report button
+  document.getElementById('report-btn-area').style.display = 'block';
+
+  // Show back-to-menu button
+  let backBtn = document.createElement('button');
+  backBtn.className = 'btn btn-secondary';
+  backBtn.textContent = '← 返回量表列表';
+  backBtn.onclick = () => {
+    document.getElementById('result').classList.remove('active');
+    document.getElementById('menu').classList.add('active');
+  };
+  backBtn.id = 'back-to-menu-btn';
+  let existing = document.getElementById('back-to-menu-btn');
+  if (!existing) document.querySelector('#result .nav-links').insertAdjacentElement('beforebegin', backBtn);
+}
+
+function showReport() {
+  let h = `<div class="result-card">
+    <h3 style="color:#fff;font-size:18px;margin-bottom:20px;text-align:center;">📊 心理诊断综合报告</h3>`;
+
+  let hasResults = false;
+  let crisis = false;
+
+  for (let key of ['phq9','gad7','mdq','dass21','pcl5']) {
+    if (!results[key]) continue;
+    hasResults = true;
+    const s = scales[key];
+    if (key === 'dass21') {
+      let subLabels = {depression:'抑郁',anxiety:'焦虑',stress:'压力'};
+      h += `<div style="margin-bottom:16px;"><div style="font-size:13px;color:var(--text2);margin-bottom:8px;">DASS-21 综合筛查</div>`;
+      for (let subName of ['depression','anxiety','stress']) {
+        let r = results[key][subName];
+        let pct = Math.min(100, r.score / 42 * 100);
+        h += `<div class="dim-bar"><div class="dim-fill" style="width:${pct}%;background:${r.level.color};"></div><span class="dim-label">${subLabels[subName]}</span><span class="dim-score">${r.score}分 · ${r.level.name}</span></div>`;
+      }
+      h += '</div>';
+    } else {
+      let r = results[key];
+      let maxScore = s.levels[s.levels.length - 1].max;
+      let pct = Math.min(100, r.score / maxScore * 100);
+      h += `<div style="margin-bottom:16px;"><div style="font-size:13px;color:var(--text2);margin-bottom:8px;">${s.name}</div>
+        <div class="dim-bar"><div class="dim-fill" style="width:${pct}%;background:${r.level.color};"></div><span class="dim-label">${r.score}/${maxScore}</span><span class="dim-score">${r.level.name}</span></div></div>`;
+      if (key === 'phq9' && answers && answers[8] >= 1) crisis = true;
+    }
+  }
+
+  if (!hasResults) {
+    h += '<p style="text-align:center;color:var(--text2);">请先完成至少一个量表</p>';
+  } else {
+    // Cross-scale analysis
+    let insights = [];
+    if (results.phq9 && results.gad7) {
+      if (results.phq9.score >= 10 && results.gad7.score >= 8) {
+        insights.push('抑郁 + 焦虑共病：你的抑郁和焦虑同时达到中度以上，这是最常见的共病模式。建议同时处理。');
+      }
+    }
+    if (results.phq9 && results.mdq) {
+      if (results.phq9.score >= 10 && results.mdq.score >= 7) {
+        insights.push('⚠️ 抑郁 + 双相筛查阳性：你的抑郁症状达到中度，同时双相筛查为阳性。双相Ⅱ型被误诊为单相抑郁的概率是30-50%，请务必在就诊时告诉医生你的躁狂特征。');
+      }
+    }
+    if (results.pcl5 && results.pcl5.score >= 31) {
+      insights.push('PTSD筛查超过截断值(31分)：你可能存在创伤后应激障碍。创伤聚焦治疗（如EMDR）可能对你有效。');
+    }
+    if (insights.length > 0) {
+      h += `<div style="margin-top:20px;padding:16px;background:var(--card2);border-radius:10px;border-left:3px solid var(--orange);">`;
+      h += `<h4 style="font-size:13px;color:var(--orange);margin-bottom:10px;">🔍 交叉分析</h4>`;
+      insights.forEach(i => { h += `<p style="font-size:12px;color:var(--text2);margin-bottom:8px;">${i}</p>`; });
+      h += '</div>';
+    }
+  }
+
+  if (crisis) {
+    h += `<div class="crisis-box"><h3>⚠️ 危机提醒</h3><p>你的PHQ-9第9题提示存在自伤/自杀念头。请认真对待：<br><b>400-161-9995</b>（全国心理援助）<br><b>010-82951332</b>（北京危机干预）</p></div>`;
+  }
+
+  h += `<div class="warning" style="margin-top:16px;">⚠️ 本报告仅供自我筛查参考，不构成医学诊断<br>请将结果带给精神科医生作为就诊参考</div>`;
+  h += '</div>';
+
+  document.getElementById('menu').classList.remove('active');
+  document.getElementById('result').classList.add('active');
+  document.getElementById('result-content').outerHTML = `<div id="result-content">${h}</div>`;
+}
+</script>
+</body>
+</html>
