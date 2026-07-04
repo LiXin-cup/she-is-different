@@ -466,12 +466,14 @@ function saveState(){
 }
 
 // ============ INIT ============
-const LS_VERSION_KEY = 'breakup_healer_version';
-const CURRENT_VERSION = '4';
-if(localStorage.getItem(LS_VERSION_KEY) !== CURRENT_VERSION){
-  localStorage.removeItem(LS_KEY);
-  localStorage.setItem(LS_VERSION_KEY, CURRENT_VERSION);
-}
+// 每次加载检查版本，强制清除旧数据
+try {
+  if(localStorage.getItem('bh_ver') !== '5'){
+    localStorage.removeItem('breakup_healer_data');
+    localStorage.removeItem('breakup_healer_version');
+    localStorage.setItem('bh_ver','5');
+  }
+} catch(e){}
 loadState();
 if(state.setupDone){
   showMain();
