@@ -466,19 +466,17 @@ function saveState(){
 }
 
 // ============ INIT ============
-// 每次加载检查版本，强制清除旧数据
-try {
-  if(localStorage.getItem('bh_ver') !== '5'){
-    localStorage.removeItem('breakup_healer_data');
-    localStorage.removeItem('breakup_healer_version');
-    localStorage.setItem('bh_ver','5');
-  }
-} catch(e){}
+// 每次新开标签/窗口都从首页开始，只有通过入门流程后才进入主界面
+// 用 sessionStorage（关闭标签就清除）控制本次会话状态
+try { localStorage.removeItem('breakup_healer_data'); } catch(e){}
 loadState();
-if(state.setupDone){
+// 只在本会话内已完成入门时才跳主界面
+if(sessionStorage.getItem('bh_entered') === '1' && state.breakupDate){
   showMain();
 }else{
+  // 强制显示欢迎页
   document.getElementById('welcome').classList.add('active');
+  document.getElementById('welcome').style.display = 'flex';
 }
 
 // ============ ONBOARDING ============
@@ -525,6 +523,7 @@ function finishOnboarding(){
     if(key) state.apiKey = key;
   }
   state.setupDone = true;
+  sessionStorage.setItem('bh_entered', '1');
   saveState();
   showMain();
 }
