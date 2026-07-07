@@ -1240,18 +1240,18 @@ function generateReport(){
   // ═══════════════════════════════════════════
   // 童锦程语录（根据情感程度）
   // ═══════════════════════════════════════════
-  const satScore=scoreSatisfaction();
-  const riskScore=scoreRedflags();
-  const pred=predictFuture();
-  const worstPath=pred[0];
-  const bestPath=pred[pred.length-1];
+  // satScore 已在上方 generateReport() 中声明，此处复用
+  const tjRiskScore=scoreRedflags();
+  const tjPred=predictFuture();
+  const worstPath=tjPred[0];
+  const bestPath=tjPred[tjPred.length-1];
 
   // 情感程度分级
   let emotionLevel;
-  if(satScore>3.5 && riskScore<8 && bestPath>=30) emotionLevel='great';
-  else if(satScore>2.5 && riskScore<15) emotionLevel='ok';
+  if(satScore>3.5 && tjRiskScore<8 && bestPath>=30) emotionLevel='great';
+  else if(satScore>2.5 && tjRiskScore<15) emotionLevel='ok';
   else if(worstPath>=35) emotionLevel='painful';
-  else if(riskScore>=15 || satScore<2) emotionLevel='toxic';
+  else if(tjRiskScore>=15 || satScore<2) emotionLevel='toxic';
   else emotionLevel='confused';
 
   const quotes={
