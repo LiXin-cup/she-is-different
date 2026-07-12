@@ -1242,9 +1242,9 @@ function generateReport(){
   // ═══════════════════════════════════════════
   // satScore 已在上方 generateReport() 中声明，此处复用
   const tjRiskScore=scoreRedflags();
-  const tjPred=predictFuture();
-  const worstPath=tjPred[0];
-  const bestPath=tjPred[tjPred.length-1];
+  const tjPred=predictFuture(myType, paType, satScore, tjRiskScore, gottmanCounts, langCounts);
+  const bestPath=tjPred.A;
+  const worstPath=tjPred.D;
 
   // 情感程度分级
   let emotionLevel;
